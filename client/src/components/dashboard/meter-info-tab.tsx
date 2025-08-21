@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Zap, Search, Download, Activity, Gauge, Calendar, FileText } from "lucide-react";
+import { Zap, Search, Download, Activity, Gauge, Calendar, FileText, Clock } from "lucide-react";
 
 interface MeterReading {
   id: string;
@@ -106,6 +106,7 @@ export default function MeterInfoTab() {
   const smartMeters = meterReadings.filter(r => r.readingSource === 'smart_meter').length;
   const estimatedReadings = meterReadings.filter(r => r.readingType === 'estimated').length;
   const totalConsumption = meterReadings.reduce((sum, r) => sum + r.consumption, 0);
+  const hhMeters = meterReadings.filter(r => r.readingSource === 'smart_meter').length;
 
   if (isLoading) {
     return (
@@ -133,7 +134,7 @@ export default function MeterInfoTab() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -180,6 +181,18 @@ export default function MeterInfoTab() {
                 </p>
               </div>
               <Activity className="h-8 w-8 text-blue-400" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">HH Meters</p>
+                <p className="text-2xl font-bold text-purple-600" data-testid="stat-hh-meters">{hhMeters}</p>
+              </div>
+              <Clock className="h-8 w-8 text-purple-400" />
             </div>
           </CardContent>
         </Card>
@@ -247,73 +260,70 @@ export default function MeterInfoTab() {
               <p className="text-gray-500">No meter readings found</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {filteredReadings.map((reading: MeterReading) => (
-                <div 
-                  key={reading.id} 
-                  className="border rounded-lg p-4 hover:bg-gray-50"
-                  data-testid={`meter-reading-${reading.id}`}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        {getUtilityIcon(reading.utilityType)}
-                        <h3 className="font-semibold text-gray-900">{reading.site.siteName}</h3>
-                        <Badge variant={getReadingTypeColor(reading.readingType)}>
-                          {reading.readingType.toUpperCase()}
-                        </Badge>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-3 font-medium text-gray-600">Site</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Utility</th>
+                    <th className="text-left p-3 font-medium text-gray-600">MPAN/MPRN/SPID</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Meter Serial</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Reading Date</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Type</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Previous</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Current</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Consumption</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Source</th>
+                    <th className="text-left p-3 font-medium text-gray-600">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredReadings.map((reading: MeterReading) => (
+                    <tr 
+                      key={reading.id} 
+                      className="border-b hover:bg-gray-50"
+                      data-testid={`meter-reading-${reading.id}`}
+                    >
+                      <td className="p-3">
+                        <div className="flex items-center gap-2">
+                          {getUtilityIcon(reading.utilityType)}
+                          <span className="font-medium">{reading.site.siteName}</span>
+                        </div>
+                      </td>
+                      <td className="p-3">
                         <Badge variant="outline">
                           {reading.utilityType.toUpperCase()}
                         </Badge>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <p className="text-gray-500">MPAN/MPRN/SPID</p>
-                          <p className="font-medium">{reading.mpanMprnSpid}</p>
+                      </td>
+                      <td className="p-3 font-medium">{reading.mpanMprnSpid}</td>
+                      <td className="p-3 font-medium">{reading.meterSerial}</td>
+                      <td className="p-3">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {formatDate(reading.readingDate)}
                         </div>
-                        <div>
-                          <p className="text-gray-500">Meter Serial</p>
-                          <p className="font-medium">{reading.meterSerial}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Reading Date</p>
-                          <p className="font-medium flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {formatDate(reading.readingDate)}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Reading Source</p>
-                          <p className="font-medium">{reading.readingSource.replace('_', ' ')}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3 pt-3 border-t text-sm">
-                        <div>
-                          <p className="text-gray-500">Previous Reading</p>
-                          <p className="font-medium">{formatReading(reading.previousReading, reading.utilityType)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Current Reading</p>
-                          <p className="font-medium">{formatReading(reading.currentReading, reading.utilityType)}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-500">Consumption</p>
-                          <p className="font-medium text-blue-600">{formatReading(reading.consumption, reading.utilityType)}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {reading.filePath && (
-                      <Button variant="outline" size="sm" className="ml-4" data-testid={`download-reading-${reading.id}`}>
-                        <Download className="h-4 w-4 mr-1" />
-                        Download
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                      </td>
+                      <td className="p-3">
+                        <Badge variant={getReadingTypeColor(reading.readingType)}>
+                          {reading.readingType.toUpperCase()}
+                        </Badge>
+                      </td>
+                      <td className="p-3 font-medium">{formatReading(reading.previousReading, reading.utilityType)}</td>
+                      <td className="p-3 font-medium">{formatReading(reading.currentReading, reading.utilityType)}</td>
+                      <td className="p-3 font-medium text-blue-600">{formatReading(reading.consumption, reading.utilityType)}</td>
+                      <td className="p-3">{reading.readingSource.replace('_', ' ')}</td>
+                      <td className="p-3">
+                        {reading.filePath && (
+                          <Button variant="outline" size="sm" data-testid={`download-reading-${reading.id}`}>
+                            <Download className="h-4 w-4 mr-1" />
+                            Download
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>

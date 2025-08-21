@@ -228,6 +228,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Smart meter rollout routes
+  app.get('/api/smart-meter-rollout', async (req, res) => {
+    try {
+      const rolloutData = await storage.getSmartMeterRollout(MOCK_USER_ID);
+      res.json(rolloutData);
+    } catch (error) {
+      console.error("Error fetching smart meter rollout data:", error);
+      res.status(500).json({ message: "Failed to fetch smart meter rollout data" });
+    }
+  });
+
   // File download route (placeholder)
   app.get('/api/download/:type/:id', async (req, res) => {
     try {

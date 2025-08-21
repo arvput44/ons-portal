@@ -186,6 +186,24 @@ export interface MockAccountStatement {
   site: MockSite;
 }
 
+export interface MockSmartMeterRollout {
+  id: string;
+  siteId: string;
+  utilityType: string;
+  currentMeterType: string;
+  targetMeterType: string;
+  eligibilityStatus: string;
+  rolloutStatus: string;
+  scheduledDate?: string;
+  completedDate?: string;
+  technicianAssigned?: string;
+  visitNotes?: string;
+  installationCost?: number;
+  communicationTested: boolean;
+  dataCollectionStarted: boolean;
+  site: MockSite;
+}
+
 // Mock user data
 export const mockUsers: MockUser[] = [
   {
@@ -1116,6 +1134,139 @@ export const mockCarbonData: MockCarbonData[] = [
     carbonOffset: 200.0,
     reportFilePath: '/carbon-reports/Q2-2024-carbon-report.pdf',
     verificationStatus: 'pending'
+  }
+];
+
+// Mock smart meter rollout
+export const mockSmartMeterRollout: MockSmartMeterRollout[] = [
+  {
+    id: 'rollout-1',
+    siteId: 'site-1',
+    utilityType: 'electricity',
+    currentMeterType: 'traditional',
+    targetMeterType: 'SMETS2',
+    eligibilityStatus: 'eligible',
+    rolloutStatus: 'installed',
+    scheduledDate: '2024-06-15',
+    completedDate: '2024-06-15',
+    technicianAssigned: 'Smart Energy Solutions',
+    visitNotes: 'Installation completed successfully, communication tested',
+    installationCost: 0,
+    communicationTested: true,
+    dataCollectionStarted: true,
+    site: mockSites[0]
+  },
+  {
+    id: 'rollout-2',
+    siteId: 'site-2',
+    utilityType: 'electricity',
+    currentMeterType: 'traditional',
+    targetMeterType: 'SMETS2',
+    eligibilityStatus: 'eligible',
+    rolloutStatus: 'site_visit_arranged',
+    scheduledDate: '2024-08-25',
+    technicianAssigned: 'Meter Installation Co',
+    visitNotes: 'Initial survey completed, installation scheduled',
+    installationCost: 0,
+    communicationTested: false,
+    dataCollectionStarted: false,
+    site: mockSites[1]
+  },
+  {
+    id: 'rollout-3',
+    siteId: 'site-3',
+    utilityType: 'gas',
+    currentMeterType: 'traditional',
+    targetMeterType: 'SMETS2',
+    eligibilityStatus: 'eligible',
+    rolloutStatus: 'working',
+    scheduledDate: '2024-07-20',
+    completedDate: '2024-07-20',
+    technicianAssigned: 'Gas Meter Services',
+    visitNotes: 'Installation complete, awaiting commission',
+    installationCost: 0,
+    communicationTested: true,
+    dataCollectionStarted: false,
+    site: mockSites[2]
+  },
+  {
+    id: 'rollout-4',
+    siteId: 'site-4',
+    utilityType: 'gas',
+    currentMeterType: 'traditional',
+    targetMeterType: 'SMETS2',
+    eligibilityStatus: 'eligible',
+    rolloutStatus: 'on_job_failed',
+    scheduledDate: '2024-07-10',
+    technicianAssigned: 'Utility Meter Installs',
+    visitNotes: 'Access issues - customer not available, rebook required',
+    installationCost: 0,
+    communicationTested: false,
+    dataCollectionStarted: false,
+    site: mockSites[3]
+  },
+  {
+    id: 'rollout-5',
+    siteId: 'site-5',
+    utilityType: 'electricity',
+    currentMeterType: 'SMETS1',
+    targetMeterType: 'SMETS2',
+    eligibilityStatus: 'eligible',
+    rolloutStatus: 'rebook',
+    scheduledDate: '2024-08-05',
+    technicianAssigned: 'Smart Meter Solutions',
+    visitNotes: 'Previous attempt failed due to meter location access',
+    installationCost: 0,
+    communicationTested: false,
+    dataCollectionStarted: false,
+    site: mockSites[4]
+  },
+  {
+    id: 'rollout-6',
+    siteId: 'site-6',
+    utilityType: 'water',
+    currentMeterType: 'traditional',
+    targetMeterType: 'AMR',
+    eligibilityStatus: 'eligible',
+    rolloutStatus: 'already_raised',
+    scheduledDate: '2024-09-01',
+    technicianAssigned: 'Water Meter Installations',
+    visitNotes: 'Work order raised with water company',
+    installationCost: 0,
+    communicationTested: false,
+    dataCollectionStarted: false,
+    site: mockSites[5]
+  },
+  {
+    id: 'rollout-7',
+    siteId: 'site-7',
+    utilityType: 'electricity',
+    currentMeterType: 'traditional',
+    targetMeterType: 'SMETS2',
+    eligibilityStatus: 'eligible',
+    rolloutStatus: 'commission',
+    scheduledDate: '2024-07-25',
+    completedDate: '2024-07-25',
+    technicianAssigned: 'Energy Meter Services',
+    visitNotes: 'Installation complete, commissioning in progress',
+    installationCost: 0,
+    communicationTested: true,
+    dataCollectionStarted: false,
+    site: mockSites[6]
+  },
+  {
+    id: 'rollout-8',
+    siteId: 'site-8',
+    utilityType: 'gas',
+    currentMeterType: 'traditional',
+    targetMeterType: 'SMETS2',
+    eligibilityStatus: 'not_eligible',
+    rolloutStatus: 'on_going',
+    visitNotes: 'Site assessment ongoing for eligibility review',
+    installationCost: 0,
+    communicationTested: false,
+    dataCollectionStarted: false,
+    site: mockSites[7]
   }
 ];
 

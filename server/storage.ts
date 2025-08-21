@@ -24,6 +24,8 @@ import {
   type MockSolarProject as SolarProject,
   type MockCarbonData as CarbonData,
   type MockAccountStatement as AccountStatement,
+  mockSmartMeterRollout,
+  type MockSmartMeterRollout as SmartMeterRollout,
 } from "@shared/mockData";
 
 type UpsertUser = Partial<User>;
@@ -38,6 +40,7 @@ type InsertMeterReading = Omit<MeterReading, 'id' | 'site'>;
 type InsertSolarProject = Omit<SolarProject, 'id' | 'site'>;
 type InsertCarbonData = Omit<CarbonData, 'id'>;
 type InsertAccountStatement = Omit<AccountStatement, 'id' | 'site'>;
+type InsertSmartMeterRollout = Omit<SmartMeterRollout, 'id' | 'site'>;
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -89,6 +92,9 @@ export interface IStorage {
   
   // Account statement operations
   getAccountStatements(userId: string): Promise<AccountStatement[]>;
+  
+  // Smart meter rollout operations
+  getSmartMeterRollout(userId: string): Promise<SmartMeterRollout[]>;
 
   // Analytics operations
   getUserSiteStats(userId: string): Promise<{
@@ -415,6 +421,18 @@ export class MockStorage implements IStorage {
     return mockAccountStatements
       .filter(statement => statement.site.userId === userId)
       .sort((a, b) => new Date(b.statementDate).getTime() - new Date(a.statementDate).getTime());
+  }
+
+  // Smart meter rollout operations
+  async getSmartMeterRollout(userId: string): Promise<SmartMeterRollout[]> {
+    return mockSmartMeterRollout
+      .filter(rollout => rollout.site.userId === userId)
+      .sort((a, b) => {
+        if (a.scheduledDate && b.scheduledDate) {
+          return new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime();
+        }
+        return 0;
+      });
   }
 
   // Analytics operations

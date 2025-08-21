@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { BarChart3, PoundSterling, Leaf, Star } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { MonthlyConsumptionChart, CostBreakdownChart, PeakUsageChart, SiteComparisonChart } from "@/components/charts/analytics-charts";
 
 interface Stats {
@@ -107,6 +107,79 @@ export default function AnalyticsTab() {
           );
         })}
       </div>
+
+      {/* Utility Breakdown Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Utility Consumption & Spending Summary
+          </CardTitle>
+          <CardDescription>
+            Monthly and total consumption and spending breakdown by utility type
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-3 font-medium text-gray-600">Utility Type</th>
+                  <th className="text-left p-3 font-medium text-gray-600">Last Month Usage</th>
+                  <th className="text-left p-3 font-medium text-gray-600">Last Month Spent</th>
+                  <th className="text-left p-3 font-medium text-gray-600">Total Usage (YTD)</th>
+                  <th className="text-left p-3 font-medium text-gray-600">Total Spent (YTD)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                      <span className="font-medium">Electricity</span>
+                    </div>
+                  </td>
+                  <td className="p-3 font-medium">125,430 kWh</td>
+                  <td className="p-3 font-medium">£18,245.50</td>
+                  <td className="p-3 font-medium">1,456,780 kWh</td>
+                  <td className="p-3 font-medium">£210,567.80</td>
+                </tr>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                      <span className="font-medium">Gas</span>
+                    </div>
+                  </td>
+                  <td className="p-3 font-medium">87,650 kWh</td>
+                  <td className="p-3 font-medium">£5,234.90</td>
+                  <td className="p-3 font-medium">890,450 kWh</td>
+                  <td className="p-3 font-medium">£58,267.30</td>
+                </tr>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-cyan-500 rounded"></div>
+                      <span className="font-medium">Water</span>
+                    </div>
+                  </td>
+                  <td className="p-3 font-medium">2,340 m³</td>
+                  <td className="p-3 font-medium">£1,456.70</td>
+                  <td className="p-3 font-medium">28,760 m³</td>
+                  <td className="p-3 font-medium">£17,890.20</td>
+                </tr>
+                <tr className="bg-gray-50 font-bold">
+                  <td className="p-3">Total</td>
+                  <td className="p-3">215,420 units</td>
+                  <td className="p-3 text-blue-600">£24,937.10</td>
+                  <td className="p-3">2,374,990 units</td>
+                  <td className="p-3 text-blue-600">£286,725.30</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

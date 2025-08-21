@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bolt, User, LogOut, BarChart3, MapPin, FileText, TrendingUp, MessageSquare, Zap, Sun, Leaf, CreditCard } from "lucide-react";
+import { Bolt, User, LogOut, BarChart3, MapPin, FileText, TrendingUp, MessageSquare, Zap, Sun, Leaf, CreditCard, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OverviewTab from "@/components/dashboard/overview-tab";
 import SitesTab from "@/components/dashboard/sites-tab";
@@ -10,6 +10,7 @@ import MeterInfoTab from "@/components/dashboard/meter-info-tab";
 import SolarPvTab from "@/components/dashboard/solar-pv-tab";
 import CarbonReportingTab from "@/components/dashboard/carbon-reporting-tab";
 import BillsPaymentsTab from "@/components/dashboard/bills-payments-tab";
+import SmartMeterRolloutTab from "@/components/dashboard/smart-meter-rollout-tab";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -28,6 +29,7 @@ export default function Dashboard() {
     { id: "solar-pv", label: "Solar PV", icon: Sun },
     { id: "carbon", label: "Carbon Reporting", icon: Leaf },
     { id: "bills-payments", label: "Bills & Payments", icon: CreditCard },
+    { id: "smart-meter-rollout", label: "Smart Meter Rollout", icon: Settings },
   ];
 
 
@@ -110,6 +112,7 @@ export default function Dashboard() {
           {activeTab === "solar-pv" && <SolarPvTab />}
           {activeTab === "carbon" && <CarbonReportingTab />}
           {activeTab === "bills-payments" && <BillsPaymentsTab />}
+          {activeTab === "smart-meter-rollout" && <SmartMeterRolloutTab />}
         </main>
       </div>
     </div>
