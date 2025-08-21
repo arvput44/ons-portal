@@ -11,7 +11,7 @@ export default function Landing() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    window.location.href = "/api/login";
+    window.location.href = "/dashboard";
   };
 
   return (

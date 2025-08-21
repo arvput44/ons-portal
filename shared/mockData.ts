@@ -1,0 +1,845 @@
+// Mock data for ONS Energy Client Management Portal
+// This file contains all the hardcoded data to simulate a realistic energy management system
+
+export interface MockUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  profileImageUrl?: string;
+}
+
+export interface MockSite {
+  id: string;
+  userId: string;
+  siteName: string;
+  siteAddress: string;
+  utilityType: string;
+  mpanMprnSpid: string;
+  accountId?: string;
+  contractStartDate?: string;
+  contractEndDate?: string;
+  dayUnitRate?: string;
+  nightUnitRate?: string;
+  eveningUnitRate?: string;
+  standingCharges?: string;
+  mopCharges?: string;
+  dcDaCharges?: string;
+  kvaCharges?: string;
+  eac?: number;
+  status: string;
+  supplier?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MockBill {
+  id: string;
+  siteId: string;
+  mpanMprnSpid: string;
+  generationDate: string;
+  billRefNo: string;
+  type: string;
+  fromDate: string;
+  toDate: string;
+  dueDate: string;
+  amount: string;
+  vatPercentage?: string;
+  status: string;
+  validationStatus: string;
+  query?: string;
+  billFilePath?: string;
+  createdAt: string;
+  updatedAt: string;
+  site: MockSite;
+}
+
+export interface MockSolarInstallation {
+  id: string;
+  siteId: string;
+  siteAddress: string;
+  installationDate?: string;
+  status: string;
+  upcomingInstallation?: string;
+  createdAt: string;
+  updatedAt: string;
+  site: MockSite;
+}
+
+export interface MockSmartMeterInstallation {
+  id: string;
+  siteId: string;
+  mpanMprn: string;
+  fuel: string;
+  mop: string;
+  jobId?: string;
+  status: string;
+  installationDate?: string;
+  createdAt: string;
+  updatedAt: string;
+  site: MockSite;
+}
+
+export interface MockDocument {
+  id: string;
+  userId: string;
+  documentType: string;
+  documentName: string;
+  filePath: string;
+  postcode?: string;
+  month?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MockHhData {
+  id: string;
+  siteId: string;
+  mpan: string;
+  date: string;
+  dataFilePath?: string;
+  createdAt: string;
+  updatedAt: string;
+  site: MockSite;
+}
+
+// Mock user data
+export const mockUsers: MockUser[] = [
+  {
+    id: 'user-1',
+    email: 'clientmanagement@ons.energy',
+    firstName: 'Client',
+    lastName: 'Manager',
+    profileImageUrl: 'https://avatar.example.com/user1.jpg'
+  }
+];
+
+// Mock sites data
+export const mockSites: MockSite[] = [
+  {
+    id: 'site-1',
+    userId: 'user-1',
+    siteName: 'Main Office Building',
+    siteAddress: '123 Business Park, London, SW1A 1AA',
+    utilityType: 'electricity',
+    mpanMprnSpid: '2000012345678901',
+    accountId: 'ACC001',
+    contractStartDate: '2024-01-01',
+    contractEndDate: '2025-12-31',
+    dayUnitRate: '15.25',
+    nightUnitRate: '8.45',
+    eveningUnitRate: '12.80',
+    standingCharges: '28.50',
+    mopCharges: '45.00',
+    dcDaCharges: '25.00',
+    kvaCharges: '15.00',
+    eac: 125000,
+    status: 'registered',
+    supplier: 'British Gas',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'site-2',
+    userId: 'user-1',
+    siteName: 'Warehouse Facility',
+    siteAddress: '456 Industrial Estate, Manchester, M1 2AB',
+    utilityType: 'electricity',
+    mpanMprnSpid: '2000098765432109',
+    accountId: 'ACC002',
+    contractStartDate: '2024-02-15',
+    contractEndDate: '2026-02-14',
+    dayUnitRate: '14.80',
+    nightUnitRate: '7.95',
+    eveningUnitRate: '12.30',
+    standingCharges: '26.75',
+    mopCharges: '42.50',
+    dcDaCharges: '23.75',
+    kvaCharges: '18.50',
+    eac: 285000,
+    status: 'registered',
+    supplier: 'EON Energy',
+    createdAt: '2024-02-15T00:00:00Z',
+    updatedAt: '2024-02-15T00:00:00Z'
+  },
+  {
+    id: 'site-3',
+    userId: 'user-1',
+    siteName: 'Retail Store Central',
+    siteAddress: '789 High Street, Birmingham, B1 3CD',
+    utilityType: 'electricity',
+    mpanMprnSpid: '2000156789012345',
+    accountId: 'ACC003',
+    contractStartDate: '2024-03-01',
+    contractEndDate: '2025-02-28',
+    dayUnitRate: '16.45',
+    nightUnitRate: '9.20',
+    eveningUnitRate: '13.60',
+    standingCharges: '31.20',
+    mopCharges: '48.00',
+    dcDaCharges: '28.50',
+    kvaCharges: '12.00',
+    eac: 95000,
+    status: 'pending',
+    supplier: 'SSE Energy',
+    createdAt: '2024-03-01T00:00:00Z',
+    updatedAt: '2024-03-01T00:00:00Z'
+  },
+  {
+    id: 'site-4',
+    userId: 'user-1',
+    siteName: 'Manufacturing Plant',
+    siteAddress: '321 Factory Lane, Leeds, LS1 4EF',
+    utilityType: 'gas',
+    mpanMprnSpid: '1023456789012345',
+    accountId: 'ACC004',
+    contractStartDate: '2024-01-15',
+    contractEndDate: '2025-01-14',
+    dayUnitRate: '4.85',
+    standingCharges: '15.60',
+    mopCharges: '25.00',
+    dcDaCharges: '18.75',
+    eac: 450000,
+    status: 'registered',
+    supplier: 'Centrica',
+    createdAt: '2024-01-15T00:00:00Z',
+    updatedAt: '2024-01-15T00:00:00Z'
+  },
+  {
+    id: 'site-5',
+    userId: 'user-1',
+    siteName: 'Branch Office North',
+    siteAddress: '654 Business Centre, Newcastle, NE1 5GH',
+    utilityType: 'gas',
+    mpanMprnSpid: '1098765432109876',
+    accountId: 'ACC005',
+    contractStartDate: '2024-04-01',
+    contractEndDate: '2025-03-31',
+    dayUnitRate: '5.25',
+    standingCharges: '17.85',
+    mopCharges: '28.50',
+    dcDaCharges: '21.25',
+    eac: 125000,
+    status: 'objected',
+    supplier: 'Shell Energy',
+    createdAt: '2024-04-01T00:00:00Z',
+    updatedAt: '2024-04-01T00:00:00Z'
+  },
+  {
+    id: 'site-6',
+    userId: 'user-1',
+    siteName: 'Head Office Water',
+    siteAddress: '987 Corporate Plaza, Glasgow, G1 6IJ',
+    utilityType: 'water',
+    mpanMprnSpid: '3012345678901234',
+    accountId: 'ACC006',
+    contractStartDate: '2024-02-01',
+    contractEndDate: '2025-01-31',
+    dayUnitRate: '2.45',
+    standingCharges: '8.95',
+    eac: 25000,
+    status: 'registered',
+    supplier: 'Thames Water',
+    createdAt: '2024-02-01T00:00:00Z',
+    updatedAt: '2024-02-01T00:00:00Z'
+  },
+  {
+    id: 'site-7',
+    userId: 'user-1',
+    siteName: 'Distribution Center',
+    siteAddress: '147 Logistics Hub, Cardiff, CF1 7KL',
+    utilityType: 'electricity',
+    mpanMprnSpid: '2000147258369014',
+    accountId: 'ACC007',
+    contractStartDate: '2024-05-01',
+    contractEndDate: '2025-04-30',
+    dayUnitRate: '15.75',
+    nightUnitRate: '8.65',
+    eveningUnitRate: '13.15',
+    standingCharges: '29.80',
+    mopCharges: '46.25',
+    dcDaCharges: '26.75',
+    kvaCharges: '22.00',
+    eac: 385000,
+    status: 'registered',
+    supplier: 'Octopus Energy',
+    createdAt: '2024-05-01T00:00:00Z',
+    updatedAt: '2024-05-01T00:00:00Z'
+  },
+  {
+    id: 'site-8',
+    userId: 'user-1',
+    siteName: 'Research Facility',
+    siteAddress: '258 Innovation Park, Edinburgh, EH1 8MN',
+    utilityType: 'gas',
+    mpanMprnSpid: '1036925814703692',
+    accountId: 'ACC008',
+    contractStartDate: '2024-03-15',
+    contractEndDate: '2025-03-14',
+    dayUnitRate: '4.95',
+    standingCharges: '16.45',
+    mopCharges: '26.75',
+    dcDaCharges: '19.50',
+    eac: 275000,
+    status: 'pending',
+    supplier: 'E.ON Next',
+    createdAt: '2024-03-15T00:00:00Z',
+    updatedAt: '2024-03-15T00:00:00Z'
+  },
+  {
+    id: 'site-9',
+    userId: 'user-1',
+    siteName: 'Training Center',
+    siteAddress: '369 Education Boulevard, Bristol, BS1 9OP',
+    utilityType: 'water',
+    mpanMprnSpid: '3025814703692581',
+    accountId: 'ACC009',
+    contractStartDate: '2024-01-01',
+    contractEndDate: '2024-12-31',
+    dayUnitRate: '2.65',
+    standingCharges: '9.45',
+    eac: 18500,
+    status: 'registered',
+    supplier: 'Severn Trent',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'site-10',
+    userId: 'user-1',
+    siteName: 'Service Depot',
+    siteAddress: '741 Maintenance Way, Liverpool, L1 0QR',
+    utilityType: 'electricity',
+    mpanMprnSpid: '2000741852963074',
+    accountId: 'ACC010',
+    contractStartDate: '2024-06-01',
+    contractEndDate: '2025-05-31',
+    dayUnitRate: '14.95',
+    nightUnitRate: '8.15',
+    eveningUnitRate: '12.55',
+    standingCharges: '27.95',
+    mopCharges: '44.00',
+    dcDaCharges: '24.50',
+    kvaCharges: '16.75',
+    eac: 165000,
+    status: 'objected',
+    supplier: 'EDF Energy',
+    createdAt: '2024-06-01T00:00:00Z',
+    updatedAt: '2024-06-01T00:00:00Z'
+  }
+];
+
+// Mock bills data with site information embedded
+export const mockBills: MockBill[] = [
+  // Validated Bills
+  {
+    id: 'bill-1',
+    siteId: 'site-1',
+    mpanMprnSpid: '2000012345678901',
+    generationDate: '2024-07-02',
+    billRefNo: '2507000836',
+    type: 'bill',
+    fromDate: '2024-06-01',
+    toDate: '2024-06-30',
+    dueDate: '2024-07-08',
+    amount: '86.07',
+    vatPercentage: '5.00',
+    status: 'paid',
+    validationStatus: 'validated',
+    billFilePath: '/bills/2507000836.pdf',
+    createdAt: '2024-07-02T00:00:00Z',
+    updatedAt: '2024-07-02T00:00:00Z',
+    site: mockSites[0]
+  },
+  {
+    id: 'bill-2',
+    siteId: 'site-2',
+    mpanMprnSpid: '2000098765432109',
+    generationDate: '2024-05-21',
+    billRefNo: '2505001074',
+    type: 'bill',
+    fromDate: '2024-04-20',
+    toDate: '2024-05-19',
+    dueDate: '2024-06-04',
+    amount: '593.70',
+    vatPercentage: '20.00',
+    status: 'paid',
+    validationStatus: 'validated',
+    billFilePath: '/bills/2505001074.pdf',
+    createdAt: '2024-05-21T00:00:00Z',
+    updatedAt: '2024-05-21T00:00:00Z',
+    site: mockSites[1]
+  },
+  {
+    id: 'bill-3',
+    siteId: 'site-7',
+    mpanMprnSpid: '2000147258369014',
+    generationDate: '2024-07-02',
+    billRefNo: '2507000279',
+    type: 'bill',
+    fromDate: '2024-06-01',
+    toDate: '2024-06-30',
+    dueDate: '2024-07-08',
+    amount: '2262.83',
+    vatPercentage: '20.00',
+    status: 'paid',
+    validationStatus: 'validated',
+    billFilePath: '/bills/2507000279.pdf',
+    createdAt: '2024-07-02T00:00:00Z',
+    updatedAt: '2024-07-02T00:00:00Z',
+    site: mockSites[6]
+  },
+  {
+    id: 'bill-4',
+    siteId: 'site-7',
+    mpanMprnSpid: '2000147258369014',
+    generationDate: '2024-05-02',
+    billRefNo: '2505000685',
+    type: 'bill',
+    fromDate: '2024-04-08',
+    toDate: '2024-04-30',
+    dueDate: '2024-05-09',
+    amount: '212.56',
+    vatPercentage: '20.00',
+    status: 'paid',
+    validationStatus: 'validated',
+    billFilePath: '/bills/2505000685.pdf',
+    createdAt: '2024-05-02T00:00:00Z',
+    updatedAt: '2024-05-02T00:00:00Z',
+    site: mockSites[6]
+  },
+  {
+    id: 'bill-5',
+    siteId: 'site-2',
+    mpanMprnSpid: '2000098765432109',
+    generationDate: '2024-06-21',
+    billRefNo: '2506001158',
+    type: 'bill',
+    fromDate: '2024-05-20',
+    toDate: '2024-06-19',
+    dueDate: '2024-07-05',
+    amount: '1239.67',
+    vatPercentage: '20.00',
+    status: 'unpaid',
+    validationStatus: 'validated',
+    billFilePath: '/bills/2506001158.pdf',
+    createdAt: '2024-06-21T00:00:00Z',
+    updatedAt: '2024-06-21T00:00:00Z',
+    site: mockSites[1]
+  },
+  {
+    id: 'bill-6',
+    siteId: 'site-1',
+    mpanMprnSpid: '2000012345678901',
+    generationDate: '2024-06-02',
+    billRefNo: '2506000834',
+    type: 'bill',
+    fromDate: '2024-05-03',
+    toDate: '2024-05-31',
+    dueDate: '2024-06-06',
+    amount: '80.89',
+    vatPercentage: '20.00',
+    status: 'paid',
+    validationStatus: 'validated',
+    billFilePath: '/bills/2506000834.pdf',
+    createdAt: '2024-06-02T00:00:00Z',
+    updatedAt: '2024-06-02T00:00:00Z',
+    site: mockSites[0]
+  },
+  {
+    id: 'bill-7',
+    siteId: 'site-7',
+    mpanMprnSpid: '2000147258369014',
+    generationDate: '2024-08-02',
+    billRefNo: '2508000723',
+    type: 'bill',
+    fromDate: '2024-07-01',
+    toDate: '2024-07-31',
+    dueDate: '2024-08-08',
+    amount: '286.49',
+    vatPercentage: '20.00',
+    status: 'paid',
+    validationStatus: 'validated',
+    billFilePath: '/bills/2508000723.pdf',
+    createdAt: '2024-08-02T00:00:00Z',
+    updatedAt: '2024-08-02T00:00:00Z',
+    site: mockSites[6]
+  },
+  {
+    id: 'bill-8',
+    siteId: 'site-7',
+    mpanMprnSpid: '2000147258369014',
+    generationDate: '2024-08-02',
+    billRefNo: '2508000723CN',
+    type: 'credit_note',
+    fromDate: '2024-07-01',
+    toDate: '2024-07-31',
+    dueDate: '2024-08-08',
+    amount: '0.00',
+    vatPercentage: '20.00',
+    status: 'paid',
+    validationStatus: 'validated',
+    billFilePath: '/bills/2508000723CN.pdf',
+    createdAt: '2024-08-02T00:00:00Z',
+    updatedAt: '2024-08-02T00:00:00Z',
+    site: mockSites[6]
+  },
+  // Incorrect Bills
+  {
+    id: 'bill-9',
+    siteId: 'site-1',
+    mpanMprnSpid: '2000012345678901',
+    generationDate: '2024-07-02',
+    billRefNo: '2507000837',
+    type: 'bill',
+    fromDate: '2024-06-01',
+    toDate: '2024-06-30',
+    dueDate: '2024-07-08',
+    amount: '186.07',
+    vatPercentage: '5.00',
+    status: 'unpaid',
+    validationStatus: 'incorrect',
+    query: 'Incorrect Initial reads - consumption values appear inflated',
+    billFilePath: '/bills/2507000837.pdf',
+    createdAt: '2024-07-02T00:00:00Z',
+    updatedAt: '2024-07-02T00:00:00Z',
+    site: mockSites[0]
+  },
+  {
+    id: 'bill-10',
+    siteId: 'site-2',
+    mpanMprnSpid: '2000098765432109',
+    generationDate: '2024-05-21',
+    billRefNo: '2505001075',
+    type: 'bill',
+    fromDate: '2024-04-20',
+    toDate: '2024-05-19',
+    dueDate: '2024-06-04',
+    amount: '893.70',
+    vatPercentage: '20.00',
+    status: 'unpaid',
+    validationStatus: 'incorrect',
+    query: 'Estimated reads used instead of actual meter readings',
+    billFilePath: '/bills/2505001075.pdf',
+    createdAt: '2024-05-21T00:00:00Z',
+    updatedAt: '2024-05-21T00:00:00Z',
+    site: mockSites[1]
+  },
+  {
+    id: 'bill-11',
+    siteId: 'site-4',
+    mpanMprnSpid: '1023456789012345',
+    generationDate: '2024-07-02',
+    billRefNo: '2507000280',
+    type: 'bill',
+    fromDate: '2024-06-01',
+    toDate: '2024-06-30',
+    dueDate: '2024-07-08',
+    amount: '1862.83',
+    vatPercentage: '20.00',
+    status: 'unpaid',
+    validationStatus: 'incorrect',
+    query: 'Standing charges calculation error - rate applied incorrectly',
+    billFilePath: '/bills/2507000280.pdf',
+    createdAt: '2024-07-02T00:00:00Z',
+    updatedAt: '2024-07-02T00:00:00Z',
+    site: mockSites[3]
+  },
+  {
+    id: 'bill-12',
+    siteId: 'site-5',
+    mpanMprnSpid: '1098765432109876',
+    generationDate: '2024-05-02',
+    billRefNo: '2505000686',
+    type: 'bill',
+    fromDate: '2024-04-08',
+    toDate: '2024-04-30',
+    dueDate: '2024-05-09',
+    amount: '412.56',
+    vatPercentage: '20.00',
+    status: 'unpaid',
+    validationStatus: 'incorrect',
+    query: 'Duplicate billing period - overlapping with previous bill',
+    billFilePath: '/bills/2505000686.pdf',
+    createdAt: '2024-05-02T00:00:00Z',
+    updatedAt: '2024-05-02T00:00:00Z',
+    site: mockSites[4]
+  },
+  {
+    id: 'bill-13',
+    siteId: 'site-6',
+    mpanMprnSpid: '3012345678901234',
+    generationDate: '2024-06-21',
+    billRefNo: '2506001159',
+    type: 'bill',
+    fromDate: '2024-05-20',
+    toDate: '2024-06-19',
+    dueDate: '2024-07-05',
+    amount: '89.67',
+    vatPercentage: '20.00',
+    status: 'unpaid',
+    validationStatus: 'incorrect',
+    query: 'Incorrect tariff applied - should be standard business rate',
+    billFilePath: '/bills/2506001159.pdf',
+    createdAt: '2024-06-21T00:00:00Z',
+    updatedAt: '2024-06-21T00:00:00Z',
+    site: mockSites[5]
+  }
+];
+
+// Mock solar installations
+export const mockSolarInstallations: MockSolarInstallation[] = [
+  {
+    id: 'solar-1',
+    siteId: 'site-1',
+    siteAddress: '123 Business Park, London, SW1A 1AA',
+    installationDate: '2024-03-15',
+    status: 'installed',
+    createdAt: '2024-03-15T00:00:00Z',
+    updatedAt: '2024-03-15T00:00:00Z',
+    site: mockSites[0]
+  },
+  {
+    id: 'solar-2',
+    siteId: 'site-2',
+    siteAddress: '456 Industrial Estate, Manchester, M1 2AB',
+    status: 'upcoming',
+    upcomingInstallation: '2024-12-15',
+    createdAt: '2024-06-01T00:00:00Z',
+    updatedAt: '2024-06-01T00:00:00Z',
+    site: mockSites[1]
+  },
+  {
+    id: 'solar-3',
+    siteId: 'site-7',
+    siteAddress: '147 Logistics Hub, Cardiff, CF1 7KL',
+    installationDate: '2024-05-20',
+    status: 'installed',
+    createdAt: '2024-05-20T00:00:00Z',
+    updatedAt: '2024-05-20T00:00:00Z',
+    site: mockSites[6]
+  }
+];
+
+// Mock smart meter installations
+export const mockSmartMeterInstallations: MockSmartMeterInstallation[] = [
+  {
+    id: 'smart-1',
+    siteId: 'site-1',
+    mpanMprn: '2000012345678901',
+    fuel: 'electricity',
+    mop: 'SSE Metering',
+    jobId: 'JOB001',
+    status: 'installed',
+    installationDate: '2024-02-10',
+    createdAt: '2024-02-10T00:00:00Z',
+    updatedAt: '2024-02-10T00:00:00Z',
+    site: mockSites[0]
+  },
+  {
+    id: 'smart-2',
+    siteId: 'site-2',
+    mpanMprn: '2000098765432109',
+    fuel: 'electricity',
+    mop: 'Landis+Gyr',
+    jobId: 'JOB002',
+    status: 'installed',
+    installationDate: '2024-03-05',
+    createdAt: '2024-03-05T00:00:00Z',
+    updatedAt: '2024-03-05T00:00:00Z',
+    site: mockSites[1]
+  },
+  {
+    id: 'smart-3',
+    siteId: 'site-4',
+    mpanMprn: '1023456789012345',
+    fuel: 'gas',
+    mop: 'Siemens',
+    jobId: 'JOB003',
+    status: 'upcoming_installation',
+    createdAt: '2024-04-01T00:00:00Z',
+    updatedAt: '2024-04-01T00:00:00Z',
+    site: mockSites[3]
+  },
+  {
+    id: 'smart-4',
+    siteId: 'site-5',
+    mpanMprn: '1098765432109876',
+    fuel: 'gas',
+    mop: 'Honeywell',
+    jobId: 'JOB004',
+    status: 'job_status_failed',
+    createdAt: '2024-04-15T00:00:00Z',
+    updatedAt: '2024-04-15T00:00:00Z',
+    site: mockSites[4]
+  },
+  {
+    id: 'smart-5',
+    siteId: 'site-7',
+    mpanMprn: '2000147258369014',
+    fuel: 'electricity',
+    mop: 'Itron',
+    jobId: 'JOB005',
+    status: 'not_eligible',
+    createdAt: '2024-05-01T00:00:00Z',
+    updatedAt: '2024-05-01T00:00:00Z',
+    site: mockSites[6]
+  }
+];
+
+// Mock documents
+export const mockDocuments: MockDocument[] = [
+  {
+    id: 'doc-1',
+    userId: 'user-1',
+    documentType: 'vat_form',
+    documentName: 'VAT Registration Certificate 2024',
+    filePath: '/documents/vat_cert_2024.pdf',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'doc-2',
+    userId: 'user-1',
+    documentType: 'monthly_edi_report',
+    documentName: 'EDI Report January 2024',
+    filePath: '/documents/edi_report_jan_2024.pdf',
+    month: 'January 2024',
+    createdAt: '2024-02-01T00:00:00Z',
+    updatedAt: '2024-02-01T00:00:00Z'
+  },
+  {
+    id: 'doc-3',
+    userId: 'user-1',
+    documentType: 'monthly_edi_report',
+    documentName: 'EDI Report February 2024',
+    filePath: '/documents/edi_report_feb_2024.pdf',
+    month: 'February 2024',
+    createdAt: '2024-03-01T00:00:00Z',
+    updatedAt: '2024-03-01T00:00:00Z'
+  },
+  {
+    id: 'doc-4',
+    userId: 'user-1',
+    documentType: 'carbon_report',
+    documentName: 'Carbon Footprint Report Q1 2024',
+    filePath: '/documents/carbon_q1_2024.pdf',
+    createdAt: '2024-04-01T00:00:00Z',
+    updatedAt: '2024-04-01T00:00:00Z'
+  },
+  {
+    id: 'doc-5',
+    userId: 'user-1',
+    documentType: 'site_mapping',
+    documentName: 'Site Location Mapping London',
+    filePath: '/documents/site_mapping_london.pdf',
+    postcode: 'SW1A',
+    createdAt: '2024-01-15T00:00:00Z',
+    updatedAt: '2024-01-15T00:00:00Z'
+  },
+  {
+    id: 'doc-6',
+    userId: 'user-1',
+    documentType: 'complaint_procedure',
+    documentName: 'Energy Complaint Procedure 2024',
+    filePath: '/documents/complaint_procedure_2024.pdf',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z'
+  }
+];
+
+// Mock HH data
+export const mockHhData: MockHhData[] = [
+  {
+    id: 'hh-1',
+    siteId: 'site-1',
+    mpan: '2000012345678901',
+    date: '2024-07-01',
+    dataFilePath: '/hh_data/2000012345678901_20240701.csv',
+    createdAt: '2024-07-02T00:00:00Z',
+    updatedAt: '2024-07-02T00:00:00Z',
+    site: mockSites[0]
+  },
+  {
+    id: 'hh-2',
+    siteId: 'site-1',
+    mpan: '2000012345678901',
+    date: '2024-06-01',
+    dataFilePath: '/hh_data/2000012345678901_20240601.csv',
+    createdAt: '2024-06-02T00:00:00Z',
+    updatedAt: '2024-06-02T00:00:00Z',
+    site: mockSites[0]
+  },
+  {
+    id: 'hh-3',
+    siteId: 'site-2',
+    mpan: '2000098765432109',
+    date: '2024-07-01',
+    dataFilePath: '/hh_data/2000098765432109_20240701.csv',
+    createdAt: '2024-07-02T00:00:00Z',
+    updatedAt: '2024-07-02T00:00:00Z',
+    site: mockSites[1]
+  },
+  {
+    id: 'hh-4',
+    siteId: 'site-7',
+    mpan: '2000147258369014',
+    date: '2024-07-01',
+    dataFilePath: '/hh_data/2000147258369014_20240701.csv',
+    createdAt: '2024-07-02T00:00:00Z',
+    updatedAt: '2024-07-02T00:00:00Z',
+    site: mockSites[6]
+  },
+  {
+    id: 'hh-5',
+    siteId: 'site-7',
+    mpan: '2000147258369014',
+    date: '2024-06-01',
+    dataFilePath: '/hh_data/2000147258369014_20240601.csv',
+    createdAt: '2024-06-02T00:00:00Z',
+    updatedAt: '2024-06-02T00:00:00Z',
+    site: mockSites[6]
+  }
+];
+
+// Analytics stats calculation helper
+export function calculateStats() {
+  const totalSites = mockSites.length;
+  const activeMpans = mockSites.filter(s => s.status === 'registered').length;
+  
+  // Calculate monthly spend from paid bills
+  const monthlySpend = mockBills
+    .filter(b => b.status === 'paid' && b.validationStatus === 'validated')
+    .reduce((sum, bill) => sum + parseFloat(bill.amount), 0);
+  
+  const pendingBills = mockBills.filter(b => b.status === 'unpaid').length;
+  
+  // Utility-specific stats
+  const electricitySites = mockSites.filter(s => s.utilityType === 'electricity' && s.status === 'registered').length;
+  const gasSites = mockSites.filter(s => s.utilityType === 'gas' && s.status === 'registered').length;
+  const waterSites = mockSites.filter(s => s.utilityType === 'water' && s.status === 'registered').length;
+  
+  const electricityPending = mockSites.filter(s => s.utilityType === 'electricity' && s.status === 'pending').length;
+  const gasPending = mockSites.filter(s => s.utilityType === 'gas' && s.status === 'pending').length;
+  const waterPending = mockSites.filter(s => s.utilityType === 'water' && s.status === 'pending').length;
+  
+  const electricityObjections = mockSites.filter(s => s.utilityType === 'electricity' && s.status === 'objected').length;
+  const gasObjections = mockSites.filter(s => s.utilityType === 'gas' && s.status === 'objected').length;
+  const waterObjections = mockSites.filter(s => s.utilityType === 'water' && s.status === 'objected').length;
+  
+  return {
+    totalSites,
+    activeMpans,
+    monthlySpend: Math.round(monthlySpend),
+    pendingBills,
+    electricitySites,
+    gasSites,
+    waterSites,
+    electricityPending,
+    gasPending,
+    waterPending,
+    electricityObjections,
+    gasObjections,
+    waterObjections
+  };
+}

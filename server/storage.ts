@@ -1,28 +1,28 @@
 import {
-  users,
-  sites,
-  bills,
-  solarInstallations,
-  smartMeterInstallations,
-  documents,
-  hhData,
-  type User,
-  type UpsertUser,
-  type Site,
-  type InsertSite,
-  type Bill,
-  type InsertBill,
-  type SolarInstallation,
-  type InsertSolarInstallation,
-  type SmartMeterInstallation,
-  type InsertSmartMeterInstallation,
-  type Document,
-  type InsertDocument,
-  type HhData,
-  type InsertHhData,
-} from "@shared/schema";
-import { db } from "./db";
-import { eq, and, desc, sql, ilike, or } from "drizzle-orm";
+  mockUsers,
+  mockSites,
+  mockBills,
+  mockSolarInstallations,
+  mockSmartMeterInstallations,
+  mockDocuments,
+  mockHhData,
+  calculateStats,
+  type MockUser as User,
+  type MockSite as Site,
+  type MockBill as Bill,
+  type MockSolarInstallation as SolarInstallation,
+  type MockSmartMeterInstallation as SmartMeterInstallation,
+  type MockDocument as Document,
+  type MockHhData as HhData,
+} from "@shared/mockData";
+
+type UpsertUser = Partial<User>;
+type InsertSite = Omit<Site, 'id' | 'createdAt' | 'updatedAt'>;
+type InsertBill = Omit<Bill, 'id' | 'createdAt' | 'updatedAt' | 'site'>;
+type InsertSolarInstallation = Omit<SolarInstallation, 'id' | 'createdAt' | 'updatedAt' | 'site'>;
+type InsertSmartMeterInstallation = Omit<SmartMeterInstallation, 'id' | 'createdAt' | 'updatedAt' | 'site'>;
+type InsertDocument = Omit<Document, 'id' | 'createdAt' | 'updatedAt'>;
+type InsertHhData = Omit<HhData, 'id' | 'createdAt' | 'updatedAt' | 'site'>;
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -76,254 +76,234 @@ export interface IStorage {
   }>;
 }
 
-export class DatabaseStorage implements IStorage {
-  // User operations (mandatory for Replit Auth)
+export class MockStorage implements IStorage {
+  // User operations
   async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    return mockUsers.find(user => user.id === id);
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
+    const existingUser = mockUsers.find(user => user.id === userData.id);
+    if (existingUser) {
+      Object.assign(existingUser, userData);
+      return existingUser;
+    }
+    const newUser = { ...userData } as User;
+    mockUsers.push(newUser);
+    return newUser;
   }
 
   // Sites operations
   async getUserSites(userId: string, utilityType?: string): Promise<Site[]> {
-    let whereConditions = [eq(sites.userId, userId)];
+    let sites = mockSites.filter(site => site.userId === userId);
     
-    if (utilityType) {
-      whereConditions.push(eq(sites.utilityType, utilityType));
+    if (utilityType && utilityType !== 'All Types') {
+      sites = sites.filter(site => site.utilityType === utilityType.toLowerCase());
     }
     
-    return db.select().from(sites).where(and(...whereConditions)).orderBy(desc(sites.createdAt));
+    return sites.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
   async getSite(id: string): Promise<Site | undefined> {
-    const [site] = await db.select().from(sites).where(eq(sites.id, id));
-    return site;
+    return mockSites.find(site => site.id === id);
   }
 
   async createSite(site: InsertSite): Promise<Site> {
-    const [newSite] = await db.insert(sites).values(site).returning();
+    const newSite: Site = {
+      ...site,
+      id: `site-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    mockSites.push(newSite);
     return newSite;
   }
 
-  async updateSite(id: string, site: Partial<InsertSite>): Promise<Site> {
-    const [updatedSite] = await db
-      .update(sites)
-      .set({ ...site, updatedAt: new Date() })
-      .where(eq(sites.id, id))
-      .returning();
-    return updatedSite;
+  async updateSite(id: string, siteData: Partial<InsertSite>): Promise<Site> {
+    const siteIndex = mockSites.findIndex(site => site.id === id);
+    if (siteIndex === -1) throw new Error('Site not found');
+    
+    mockSites[siteIndex] = {
+      ...mockSites[siteIndex],
+      ...siteData,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    return mockSites[siteIndex];
   }
 
   async searchSites(userId: string, searchTerm: string, utilityType?: string, status?: string): Promise<Site[]> {
-    let whereConditions = [eq(sites.userId, userId)];
+    let sites = mockSites.filter(site => site.userId === userId);
     
     if (searchTerm) {
-      whereConditions.push(
-        or(
-          ilike(sites.mpanMprnSpid, `%${searchTerm}%`),
-          ilike(sites.siteName, `%${searchTerm}%`),
-          ilike(sites.siteAddress, `%${searchTerm}%`)
-        )!
+      const term = searchTerm.toLowerCase();
+      sites = sites.filter(site => 
+        site.mpanMprnSpid.toLowerCase().includes(term) ||
+        site.siteName.toLowerCase().includes(term) ||
+        site.siteAddress.toLowerCase().includes(term)
       );
     }
     
     if (utilityType && utilityType !== 'All Types') {
-      whereConditions.push(eq(sites.utilityType, utilityType.toLowerCase()));
+      sites = sites.filter(site => site.utilityType === utilityType.toLowerCase());
     }
     
     if (status && status !== 'All Statuses') {
-      whereConditions.push(eq(sites.status, status.toLowerCase()));
+      sites = sites.filter(site => site.status === status.toLowerCase());
     }
 
-    return db.select().from(sites).where(and(...whereConditions)).orderBy(desc(sites.createdAt));
+    return sites.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
   // Bills operations
-  async getUserBills(userId: string, validationStatus?: string, month?: string, status?: string, utilityType?: string): Promise<(Bill & { site: Site })[]> {
-    let whereConditions = [eq(sites.userId, userId)];
+  async getUserBills(userId: string, validationStatus?: string, month?: string, status?: string, utilityType?: string): Promise<Bill[]> {
+    let bills = mockBills.filter(bill => bill.site.userId === userId);
     
-    if (validationStatus) {
-      whereConditions.push(eq(bills.validationStatus, validationStatus));
+    if (validationStatus && validationStatus !== 'All Status') {
+      bills = bills.filter(bill => bill.validationStatus === validationStatus);
     }
     
     if (month && month !== 'All Months') {
-      // Extract month/year from the month parameter (e.g., "January 2024")
       const [monthName, year] = month.split(' ');
       const monthNumber = new Date(`${monthName} 1, ${year}`).getMonth() + 1;
-      whereConditions.push(
-        sql`EXTRACT(MONTH FROM ${bills.generationDate}) = ${monthNumber} AND EXTRACT(YEAR FROM ${bills.generationDate}) = ${parseInt(year)}`
-      );
+      bills = bills.filter(bill => {
+        const billDate = new Date(bill.generationDate);
+        return billDate.getMonth() + 1 === monthNumber && billDate.getFullYear() === parseInt(year);
+      });
     }
     
     if (status && status !== 'All Status') {
-      whereConditions.push(eq(bills.status, status.toLowerCase()));
+      bills = bills.filter(bill => bill.status === status.toLowerCase());
     }
     
     if (utilityType && utilityType !== 'All Utilities') {
-      whereConditions.push(eq(sites.utilityType, utilityType.toLowerCase()));
+      bills = bills.filter(bill => bill.site.utilityType === utilityType.toLowerCase());
     }
 
-    const result = await db
-      .select({
-        id: bills.id,
-        siteId: bills.siteId,
-        mpanMprnSpid: bills.mpanMprnSpid,
-        generationDate: bills.generationDate,
-        billRefNo: bills.billRefNo,
-        type: bills.type,
-        fromDate: bills.fromDate,
-        toDate: bills.toDate,
-        dueDate: bills.dueDate,
-        amount: bills.amount,
-        vatPercentage: bills.vatPercentage,
-        status: bills.status,
-        validationStatus: bills.validationStatus,
-        query: bills.query,
-        billFilePath: bills.billFilePath,
-        createdAt: bills.createdAt,
-        updatedAt: bills.updatedAt,
-        site: sites,
-      })
-      .from(bills)
-      .innerJoin(sites, eq(bills.siteId, sites.id))
-      .where(and(...whereConditions))
-      .orderBy(desc(bills.generationDate));
-
-    return result;
+    return bills.sort((a, b) => new Date(b.generationDate).getTime() - new Date(a.generationDate).getTime());
   }
 
   async getBill(id: string): Promise<Bill | undefined> {
-    const [bill] = await db.select().from(bills).where(eq(bills.id, id));
-    return bill;
+    return mockBills.find(bill => bill.id === id);
   }
 
-  async createBill(bill: InsertBill): Promise<Bill> {
-    const [newBill] = await db.insert(bills).values(bill).returning();
+  async createBill(billData: InsertBill): Promise<Bill> {
+    const site = mockSites.find(s => s.id === billData.siteId);
+    if (!site) throw new Error('Site not found');
+    
+    const newBill: Bill = {
+      ...billData,
+      id: `bill-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      site,
+    };
+    mockBills.push(newBill);
     return newBill;
   }
 
-  async updateBill(id: string, bill: Partial<InsertBill>): Promise<Bill> {
-    const [updatedBill] = await db
-      .update(bills)
-      .set({ ...bill, updatedAt: new Date() })
-      .where(eq(bills.id, id))
-      .returning();
-    return updatedBill;
+  async updateBill(id: string, billData: Partial<InsertBill>): Promise<Bill> {
+    const billIndex = mockBills.findIndex(bill => bill.id === id);
+    if (billIndex === -1) throw new Error('Bill not found');
+    
+    mockBills[billIndex] = {
+      ...mockBills[billIndex],
+      ...billData,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    return mockBills[billIndex];
   }
 
   // Solar installations operations
-  async getUserSolarInstallations(userId: string): Promise<(SolarInstallation & { site: Site })[]> {
-    const result = await db
-      .select({
-        id: solarInstallations.id,
-        siteId: solarInstallations.siteId,
-        siteAddress: solarInstallations.siteAddress,
-        installationDate: solarInstallations.installationDate,
-        status: solarInstallations.status,
-        upcomingInstallation: solarInstallations.upcomingInstallation,
-        createdAt: solarInstallations.createdAt,
-        updatedAt: solarInstallations.updatedAt,
-        site: sites,
-      })
-      .from(solarInstallations)
-      .innerJoin(sites, eq(solarInstallations.siteId, sites.id))
-      .where(eq(sites.userId, userId))
-      .orderBy(desc(solarInstallations.createdAt));
-
-    return result;
+  async getUserSolarInstallations(userId: string): Promise<SolarInstallation[]> {
+    return mockSolarInstallations
+      .filter(installation => installation.site.userId === userId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
-  async createSolarInstallation(installation: InsertSolarInstallation): Promise<SolarInstallation> {
-    const [newInstallation] = await db.insert(solarInstallations).values(installation).returning();
+  async createSolarInstallation(installationData: InsertSolarInstallation): Promise<SolarInstallation> {
+    const site = mockSites.find(s => s.id === installationData.siteId);
+    if (!site) throw new Error('Site not found');
+    
+    const newInstallation: SolarInstallation = {
+      ...installationData,
+      id: `solar-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      site,
+    };
+    mockSolarInstallations.push(newInstallation);
     return newInstallation;
   }
 
   // Smart meter installations operations
-  async getUserSmartMeterInstallations(userId: string): Promise<(SmartMeterInstallation & { site: Site })[]> {
-    const result = await db
-      .select({
-        id: smartMeterInstallations.id,
-        siteId: smartMeterInstallations.siteId,
-        mpanMprn: smartMeterInstallations.mpanMprn,
-        fuel: smartMeterInstallations.fuel,
-        mop: smartMeterInstallations.mop,
-        jobId: smartMeterInstallations.jobId,
-        status: smartMeterInstallations.status,
-        installationDate: smartMeterInstallations.installationDate,
-        createdAt: smartMeterInstallations.createdAt,
-        updatedAt: smartMeterInstallations.updatedAt,
-        site: sites,
-      })
-      .from(smartMeterInstallations)
-      .innerJoin(sites, eq(smartMeterInstallations.siteId, sites.id))
-      .where(eq(sites.userId, userId))
-      .orderBy(desc(smartMeterInstallations.createdAt));
-
-    return result;
+  async getUserSmartMeterInstallations(userId: string): Promise<SmartMeterInstallation[]> {
+    return mockSmartMeterInstallations
+      .filter(installation => installation.site.userId === userId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
-  async createSmartMeterInstallation(installation: InsertSmartMeterInstallation): Promise<SmartMeterInstallation> {
-    const [newInstallation] = await db.insert(smartMeterInstallations).values(installation).returning();
+  async createSmartMeterInstallation(installationData: InsertSmartMeterInstallation): Promise<SmartMeterInstallation> {
+    const site = mockSites.find(s => s.id === installationData.siteId);
+    if (!site) throw new Error('Site not found');
+    
+    const newInstallation: SmartMeterInstallation = {
+      ...installationData,
+      id: `smart-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      site,
+    };
+    mockSmartMeterInstallations.push(newInstallation);
     return newInstallation;
   }
 
   // Documents operations
   async getUserDocuments(userId: string, documentType?: string, postcode?: string): Promise<Document[]> {
-    let whereConditions = [eq(documents.userId, userId)];
+    let documents = mockDocuments.filter(doc => doc.userId === userId);
     
     if (documentType && documentType !== 'All Types') {
-      whereConditions.push(eq(documents.documentType, documentType));
+      documents = documents.filter(doc => doc.documentType === documentType);
     }
     
     if (postcode) {
-      whereConditions.push(ilike(documents.postcode, `%${postcode}%`));
+      documents = documents.filter(doc => doc.postcode && doc.postcode.toLowerCase().includes(postcode.toLowerCase()));
     }
 
-    return db.select().from(documents).where(and(...whereConditions)).orderBy(desc(documents.createdAt));
+    return documents.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
-  async createDocument(document: InsertDocument): Promise<Document> {
-    const [newDocument] = await db.insert(documents).values(document).returning();
+  async createDocument(documentData: InsertDocument): Promise<Document> {
+    const newDocument: Document = {
+      ...documentData,
+      id: `doc-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    mockDocuments.push(newDocument);
     return newDocument;
   }
 
   // HH Data operations
-  async getUserHhData(userId: string): Promise<(HhData & { site: Site })[]> {
-    const result = await db
-      .select({
-        id: hhData.id,
-        siteId: hhData.siteId,
-        mpan: hhData.mpan,
-        date: hhData.date,
-        dataFilePath: hhData.dataFilePath,
-        createdAt: hhData.createdAt,
-        updatedAt: hhData.updatedAt,
-        site: sites,
-      })
-      .from(hhData)
-      .innerJoin(sites, eq(hhData.siteId, sites.id))
-      .where(eq(sites.userId, userId))
-      .orderBy(desc(hhData.date));
-
-    return result;
+  async getUserHhData(userId: string): Promise<HhData[]> {
+    return mockHhData
+      .filter(data => data.site.userId === userId)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
 
   async createHhData(hhDataInput: InsertHhData): Promise<HhData> {
-    const [newHhData] = await db.insert(hhData).values(hhDataInput).returning();
+    const site = mockSites.find(s => s.id === hhDataInput.siteId);
+    if (!site) throw new Error('Site not found');
+    
+    const newHhData: HhData = {
+      ...hhDataInput,
+      id: `hh-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      site,
+    };
+    mockHhData.push(newHhData);
     return newHhData;
   }
 
@@ -343,118 +323,8 @@ export class DatabaseStorage implements IStorage {
     gasObjections: number;
     waterObjections: number;
   }> {
-    // Get total sites
-    const totalSitesResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(eq(sites.userId, userId));
-    const totalSites = totalSitesResult[0]?.count || 0;
-
-    // Get active MPANs (registered sites)
-    const activeMpansResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.status, 'registered')));
-    const activeMpans = activeMpansResult[0]?.count || 0;
-
-    // Get monthly spend from bills
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    const monthlySpendResult = await db
-      .select({ total: sql<number>`COALESCE(SUM(${bills.amount}), 0)` })
-      .from(bills)
-      .innerJoin(sites, eq(bills.siteId, sites.id))
-      .where(
-        and(
-          eq(sites.userId, userId),
-          sql`EXTRACT(MONTH FROM ${bills.generationDate}) = ${currentMonth}`,
-          sql`EXTRACT(YEAR FROM ${bills.generationDate}) = ${currentYear}`,
-          eq(bills.status, 'paid')
-        )
-      );
-    const monthlySpend = Number(monthlySpendResult[0]?.total || 0);
-
-    // Get pending bills
-    const pendingBillsResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(bills)
-      .innerJoin(sites, eq(bills.siteId, sites.id))
-      .where(and(eq(sites.userId, userId), eq(bills.status, 'unpaid')));
-    const pendingBills = pendingBillsResult[0]?.count || 0;
-
-    // Get utility-specific stats
-    const electricitySitesResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.utilityType, 'electricity'), eq(sites.status, 'registered')));
-    const electricitySites = electricitySitesResult[0]?.count || 0;
-
-    const gasSitesResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.utilityType, 'gas'), eq(sites.status, 'registered')));
-    const gasSites = gasSitesResult[0]?.count || 0;
-
-    const waterSitesResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.utilityType, 'water'), eq(sites.status, 'registered')));
-    const waterSites = waterSitesResult[0]?.count || 0;
-
-    // Get pending registrations
-    const electricityPendingResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.utilityType, 'electricity'), eq(sites.status, 'pending')));
-    const electricityPending = electricityPendingResult[0]?.count || 0;
-
-    const gasPendingResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.utilityType, 'gas'), eq(sites.status, 'pending')));
-    const gasPending = gasPendingResult[0]?.count || 0;
-
-    const waterPendingResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.utilityType, 'water'), eq(sites.status, 'pending')));
-    const waterPending = waterPendingResult[0]?.count || 0;
-
-    // Get objections
-    const electricityObjectionsResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.utilityType, 'electricity'), eq(sites.status, 'objected')));
-    const electricityObjections = electricityObjectionsResult[0]?.count || 0;
-
-    const gasObjectionsResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.utilityType, 'gas'), eq(sites.status, 'objected')));
-    const gasObjections = gasObjectionsResult[0]?.count || 0;
-
-    const waterObjectionsResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(sites)
-      .where(and(eq(sites.userId, userId), eq(sites.utilityType, 'water'), eq(sites.status, 'objected')));
-    const waterObjections = waterObjectionsResult[0]?.count || 0;
-
-    return {
-      totalSites,
-      activeMpans,
-      monthlySpend,
-      pendingBills,
-      electricitySites,
-      gasSites,
-      waterSites,
-      electricityPending,
-      gasPending,
-      waterPending,
-      electricityObjections,
-      gasObjections,
-      waterObjections,
-    };
+    return calculateStats();
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new MockStorage();

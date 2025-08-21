@@ -1,19 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertSiteSchema, insertBillSchema } from "@shared/schema";
-import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  const MOCK_USER_ID = 'user-1';
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Mock auth route - always return the mock user
+  app.get('/api/auth/user', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = await storage.getUser(MOCK_USER_ID);
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -22,16 +17,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Sites routes
-  app.get('/api/sites', isAuthenticated, async (req: any, res) => {
+  app.get('/api/sites', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
       const { utilityType, searchTerm, status } = req.query;
       
       let sites;
       if (searchTerm) {
-        sites = await storage.searchSites(userId, searchTerm, utilityType, status);
+        sites = await storage.searchSites(MOCK_USER_ID, searchTerm as string, utilityType as string, status as string);
       } else {
-        sites = await storage.getUserSites(userId, utilityType);
+        sites = await storage.getUserSites(MOCK_USER_ID, utilityType as string);
       }
       
       res.json(sites);
@@ -41,10 +35,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/sites', isAuthenticated, async (req: any, res) => {
+  app.post('/api/sites', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const siteData = insertSiteSchema.parse({ ...req.body, userId });
+      const siteData = { ...req.body, userId: MOCK_USER_ID };
       const site = await storage.createSite(siteData);
       res.json(site);
     } catch (error) {
@@ -53,7 +46,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/sites/:id', isAuthenticated, async (req: any, res) => {
+  app.put('/api/sites/:id', async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -66,11 +59,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Bills routes
-  app.get('/api/bills', isAuthenticated, async (req: any, res) => {
+  app.get('/api/bills', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
       const { validationStatus, month, status, utilityType } = req.query;
-      const bills = await storage.getUserBills(userId, validationStatus, month, status, utilityType);
+      const bills = await storage.getUserBills(MOCK_USER_ID, validationStatus as string, month as string, status as string, utilityType as string);
       res.json(bills);
     } catch (error) {
       console.error("Error fetching bills:", error);
@@ -78,9 +70,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/bills', isAuthenticated, async (req: any, res) => {
+  app.post('/api/bills', async (req, res) => {
     try {
-      const billData = insertBillSchema.parse(req.body);
+      const billData = req.body;
       const bill = await storage.createBill(billData);
       res.json(bill);
     } catch (error) {
@@ -89,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/bills/:id', isAuthenticated, async (req: any, res) => {
+  app.put('/api/bills/:id', async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -102,10 +94,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Solar installations routes
-  app.get('/api/solar-installations', isAuthenticated, async (req: any, res) => {
+  app.get('/api/solar-installations', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const installations = await storage.getUserSolarInstallations(userId);
+      const installations = await storage.getUserSolarInstallations(MOCK_USER_ID);
       res.json(installations);
     } catch (error) {
       console.error("Error fetching solar installations:", error);
@@ -114,10 +105,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Smart meter installations routes
-  app.get('/api/smart-meter-installations', isAuthenticated, async (req: any, res) => {
+  app.get('/api/smart-meter-installations', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const installations = await storage.getUserSmartMeterInstallations(userId);
+      const installations = await storage.getUserSmartMeterInstallations(MOCK_USER_ID);
       res.json(installations);
     } catch (error) {
       console.error("Error fetching smart meter installations:", error);
@@ -126,11 +116,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Documents routes
-  app.get('/api/documents', isAuthenticated, async (req: any, res) => {
+  app.get('/api/documents', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
       const { documentType, postcode } = req.query;
-      const documents = await storage.getUserDocuments(userId, documentType, postcode);
+      const documents = await storage.getUserDocuments(MOCK_USER_ID, documentType as string, postcode as string);
       res.json(documents);
     } catch (error) {
       console.error("Error fetching documents:", error);
@@ -139,10 +128,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // HH Data routes
-  app.get('/api/hh-data', isAuthenticated, async (req: any, res) => {
+  app.get('/api/hh-data', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const hhData = await storage.getUserHhData(userId);
+      const hhData = await storage.getUserHhData(MOCK_USER_ID);
       res.json(hhData);
     } catch (error) {
       console.error("Error fetching HH data:", error);
@@ -151,10 +139,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Analytics routes
-  app.get('/api/analytics/stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/analytics/stats', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const stats = await storage.getUserSiteStats(userId);
+      const stats = await storage.getUserSiteStats(MOCK_USER_ID);
       res.json(stats);
     } catch (error) {
       console.error("Error fetching analytics stats:", error);
@@ -162,11 +149,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // File download route (placeholder - would need proper file serving implementation)
-  app.get('/api/download/:type/:id', isAuthenticated, async (req: any, res) => {
+  // File download route (placeholder)
+  app.get('/api/download/:type/:id', async (req, res) => {
     try {
       const { type, id } = req.params;
-      // TODO: Implement file download logic based on type (bill, hh-data, document)
       res.json({ message: `Download ${type} with ID ${id}` });
     } catch (error) {
       console.error("Error downloading file:", error);

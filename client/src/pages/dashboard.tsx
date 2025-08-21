@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 import { Bolt, User, LogOut, BarChart3, MapPin, FileText, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OverviewTab from "@/components/dashboard/overview-tab";
@@ -9,27 +7,10 @@ import BillingTab from "@/components/dashboard/billing-tab";
 import AnalyticsTab from "@/components/dashboard/analytics-tab";
 
 export default function Dashboard() {
-  const { user, isAuthenticated, isLoading } = useAuth();
-  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
   const handleLogout = () => {
-    window.location.href = "/api/logout";
+    window.location.href = "/";
   };
 
   const tabs = [
@@ -39,16 +20,6 @@ export default function Dashboard() {
     { id: "analytics", label: "Analytics", icon: TrendingUp },
   ];
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-energy-blue mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
