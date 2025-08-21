@@ -6,6 +6,7 @@ import {
   mockSmartMeterInstallations,
   mockDocuments,
   mockHhData,
+  mockQueries,
   calculateStats,
   type MockUser as User,
   type MockSite as Site,
@@ -14,6 +15,7 @@ import {
   type MockSmartMeterInstallation as SmartMeterInstallation,
   type MockDocument as Document,
   type MockHhData as HhData,
+  type MockQuery as Query,
 } from "@shared/mockData";
 
 type UpsertUser = Partial<User>;
@@ -23,6 +25,7 @@ type InsertSolarInstallation = Omit<SolarInstallation, 'id' | 'createdAt' | 'upd
 type InsertSmartMeterInstallation = Omit<SmartMeterInstallation, 'id' | 'createdAt' | 'updatedAt' | 'site'>;
 type InsertDocument = Omit<Document, 'id' | 'createdAt' | 'updatedAt'>;
 type InsertHhData = Omit<HhData, 'id' | 'createdAt' | 'updatedAt' | 'site'>;
+type InsertQuery = Omit<Query, 'id' | 'raisedDate' | 'lastUpdated' | 'site' | 'bill'>;
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -57,6 +60,11 @@ export interface IStorage {
   // HH Data operations
   getUserHhData(userId: string): Promise<(HhData & { site: Site })[]>;
   createHhData(hhData: InsertHhData): Promise<HhData>;
+
+  // Query operations
+  getUserQueries(userId: string, status?: string, priority?: string, queryType?: string): Promise<Query[]>;
+  createQuery(query: InsertQuery): Promise<Query>;
+  updateQuery(id: string, query: Partial<InsertQuery>): Promise<Query>;
 
   // Analytics operations
   getUserSiteStats(userId: string): Promise<{
@@ -305,6 +313,56 @@ export class MockStorage implements IStorage {
     };
     mockHhData.push(newHhData);
     return newHhData;
+  }
+
+  // Query operations
+  async getUserQueries(userId: string, status?: string, priority?: string, queryType?: string): Promise<Query[]> {
+    let queries = mockQueries.filter(query => query.userId === userId);
+    
+    if (status && status !== 'All Status') {
+      queries = queries.filter(query => query.status === status.toLowerCase());
+    }
+    
+    if (priority && priority !== 'All Priority') {
+      queries = queries.filter(query => query.priority === priority.toLowerCase());
+    }
+    
+    if (queryType && queryType !== 'All Types') {
+      queries = queries.filter(query => query.queryType === queryType.toLowerCase().replace(' ', '_'));
+    }
+    
+    return queries.sort((a, b) => new Date(b.raisedDate).getTime() - new Date(a.raisedDate).getTime());
+  }
+
+  async createQuery(queryData: InsertQuery): Promise<Query> {
+    const site = mockSites.find(s => s.id === queryData.siteId);
+    if (!site) throw new Error('Site not found');
+    
+    const now = new Date().toISOString();
+    const newQuery: Query = {
+      ...queryData,
+      id: `query-${Date.now()}`,
+      raisedDate: now,
+      lastUpdated: now,
+      status: 'open',
+      site,
+    };
+    
+    mockQueries.push(newQuery);
+    return newQuery;
+  }
+
+  async updateQuery(id: string, queryData: Partial<InsertQuery>): Promise<Query> {
+    const queryIndex = mockQueries.findIndex(query => query.id === id);
+    if (queryIndex === -1) throw new Error('Query not found');
+    
+    mockQueries[queryIndex] = {
+      ...mockQueries[queryIndex],
+      ...queryData,
+      lastUpdated: new Date().toISOString(),
+    };
+    
+    return mockQueries[queryIndex];
   }
 
   // Analytics operations

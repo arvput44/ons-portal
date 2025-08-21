@@ -149,6 +149,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Query routes
+  app.get('/api/queries', async (req, res) => {
+    try {
+      const { status, priority, queryType } = req.query;
+      const queries = await storage.getUserQueries(MOCK_USER_ID, status as string, priority as string, queryType as string);
+      res.json(queries);
+    } catch (error) {
+      console.error("Error fetching queries:", error);
+      res.status(500).json({ message: "Failed to fetch queries" });
+    }
+  });
+
+  app.post('/api/queries', async (req, res) => {
+    try {
+      const queryData = { ...req.body, userId: MOCK_USER_ID };
+      const query = await storage.createQuery(queryData);
+      res.json(query);
+    } catch (error) {
+      console.error("Error creating query:", error);
+      res.status(500).json({ message: "Failed to create query" });
+    }
+  });
+
+  app.put('/api/queries/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const query = await storage.updateQuery(id, updateData);
+      res.json(query);
+    } catch (error) {
+      console.error("Error updating query:", error);
+      res.status(500).json({ message: "Failed to update query" });
+    }
+  });
+
   // File download route (placeholder)
   app.get('/api/download/:type/:id', async (req, res) => {
     try {

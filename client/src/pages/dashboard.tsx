@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Bolt, User, LogOut, BarChart3, MapPin, FileText, TrendingUp } from "lucide-react";
+import { Bolt, User, LogOut, BarChart3, MapPin, FileText, TrendingUp, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OverviewTab from "@/components/dashboard/overview-tab";
 import SitesTab from "@/components/dashboard/sites-tab";
 import BillingTab from "@/components/dashboard/billing-tab";
 import AnalyticsTab from "@/components/dashboard/analytics-tab";
+import QueryTab from "@/components/dashboard/query-tab";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -18,6 +19,7 @@ export default function Dashboard() {
     { id: "sites", label: "Site Management", icon: MapPin },
     { id: "billing", label: "Bill Validation", icon: FileText },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
+    { id: "query", label: "Query Management", icon: MessageSquare },
   ];
 
 
@@ -95,6 +97,7 @@ export default function Dashboard() {
           {activeTab === "sites" && <SitesTab />}
           {activeTab === "billing" && <BillingTab />}
           {activeTab === "analytics" && <AnalyticsTab />}
+          {activeTab === "query" && <QueryTab />}
         </main>
       </div>
     </div>

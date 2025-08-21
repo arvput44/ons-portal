@@ -103,6 +103,24 @@ export interface MockHhData {
   site: MockSite;
 }
 
+export interface MockQuery {
+  id: string;
+  userId: string;
+  siteId?: string;
+  billId?: string;
+  queryType: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  raisedDate: string;
+  lastUpdated: string;
+  assignedTo?: string;
+  resolution?: string;
+  site?: MockSite;
+  bill?: MockBill;
+}
+
 // Mock user data
 export const mockUsers: MockUser[] = [
   {
@@ -745,6 +763,97 @@ export const mockDocuments: MockDocument[] = [
     filePath: '/documents/complaint_procedure_2024.pdf',
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z'
+  }
+];
+
+// Mock queries
+export const mockQueries: MockQuery[] = [
+  {
+    id: 'query-1',
+    userId: 'user-1',
+    siteId: 'site-1',
+    billId: 'bill-9',
+    queryType: 'billing_dispute',
+    title: 'Incorrect consumption reading on June bill',
+    description: 'The June 2024 bill shows consumption that is 3x higher than normal usage patterns. Meter readings appear to be estimated rather than actual readings.',
+    status: 'open',
+    priority: 'high',
+    raisedDate: '2024-07-05T09:30:00Z',
+    lastUpdated: '2024-07-15T14:20:00Z',
+    assignedTo: 'Sarah Williams',
+    site: mockSites[0]
+  },
+  {
+    id: 'query-2',
+    userId: 'user-1',
+    siteId: 'site-2',
+    billId: 'bill-10',
+    queryType: 'billing_dispute',
+    title: 'Standing charges calculation error',
+    description: 'The standing charges applied on the May bill are incorrect. The rate being charged is for domestic tariff instead of business rates.',
+    status: 'in_progress',
+    priority: 'medium',
+    raisedDate: '2024-06-22T11:15:00Z',
+    lastUpdated: '2024-07-10T16:45:00Z',
+    assignedTo: 'James Mitchell',
+    site: mockSites[1]
+  },
+  {
+    id: 'query-3',
+    userId: 'user-1',
+    siteId: 'site-4',
+    queryType: 'service_issue',
+    title: 'Smart meter installation delay',
+    description: 'Smart meter installation scheduled for March 2024 has been postponed multiple times. Need confirmation of new installation date.',
+    status: 'escalated',
+    priority: 'high',
+    raisedDate: '2024-04-10T08:00:00Z',
+    lastUpdated: '2024-07-20T10:30:00Z',
+    assignedTo: 'Emma Thompson',
+    site: mockSites[3]
+  },
+  {
+    id: 'query-4',
+    userId: 'user-1',
+    siteId: 'site-6',
+    billId: 'bill-13',
+    queryType: 'billing_dispute',
+    title: 'Water tariff classification error',
+    description: 'Water utility bill is using industrial tariff rates instead of commercial rates for our office building.',
+    status: 'resolved',
+    priority: 'medium',
+    raisedDate: '2024-06-28T13:45:00Z',
+    lastUpdated: '2024-07-25T09:15:00Z',
+    assignedTo: 'David Roberts',
+    resolution: 'Tariff corrected and credit note issued for £45.67 overcharge.',
+    site: mockSites[5]
+  },
+  {
+    id: 'query-5',
+    userId: 'user-1',
+    siteId: 'site-7',
+    queryType: 'account_issue',
+    title: 'Duplicate account creation',
+    description: 'Multiple utility accounts have been created for the same site address. Need consolidation into single account.',
+    status: 'open',
+    priority: 'low',
+    raisedDate: '2024-07-12T15:20:00Z',
+    lastUpdated: '2024-07-18T11:00:00Z',
+    site: mockSites[6]
+  },
+  {
+    id: 'query-6',
+    userId: 'user-1',
+    siteId: 'site-5',
+    queryType: 'service_issue',
+    title: 'Gas supply registration objection',
+    description: 'Existing supplier has objected to our change of tenancy application. Need resolution to proceed with new contract.',
+    status: 'in_progress',
+    priority: 'high',
+    raisedDate: '2024-07-01T10:00:00Z',
+    lastUpdated: '2024-07-22T14:30:00Z',
+    assignedTo: 'Michael Brown',
+    site: mockSites[4]
   }
 ];
 
