@@ -7,6 +7,10 @@ import {
   mockDocuments,
   mockHhData,
   mockQueries,
+  mockMeterReadings,
+  mockSolarProjects,
+  mockCarbonData,
+  mockAccountStatements,
   calculateStats,
   type MockUser as User,
   type MockSite as Site,
@@ -16,6 +20,10 @@ import {
   type MockDocument as Document,
   type MockHhData as HhData,
   type MockQuery as Query,
+  type MockMeterReading as MeterReading,
+  type MockSolarProject as SolarProject,
+  type MockCarbonData as CarbonData,
+  type MockAccountStatement as AccountStatement,
 } from "@shared/mockData";
 
 type UpsertUser = Partial<User>;
@@ -26,6 +34,10 @@ type InsertSmartMeterInstallation = Omit<SmartMeterInstallation, 'id' | 'created
 type InsertDocument = Omit<Document, 'id' | 'createdAt' | 'updatedAt'>;
 type InsertHhData = Omit<HhData, 'id' | 'createdAt' | 'updatedAt' | 'site'>;
 type InsertQuery = Omit<Query, 'id' | 'raisedDate' | 'lastUpdated' | 'site' | 'bill'>;
+type InsertMeterReading = Omit<MeterReading, 'id' | 'site'>;
+type InsertSolarProject = Omit<SolarProject, 'id' | 'site'>;
+type InsertCarbonData = Omit<CarbonData, 'id'>;
+type InsertAccountStatement = Omit<AccountStatement, 'id' | 'site'>;
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -65,6 +77,18 @@ export interface IStorage {
   getUserQueries(userId: string, status?: string, priority?: string, queryType?: string): Promise<Query[]>;
   createQuery(query: InsertQuery): Promise<Query>;
   updateQuery(id: string, query: Partial<InsertQuery>): Promise<Query>;
+
+  // Meter reading operations
+  getMeterReadings(userId: string): Promise<MeterReading[]>;
+  
+  // Solar project operations
+  getSolarProjects(userId: string): Promise<SolarProject[]>;
+  
+  // Carbon data operations
+  getCarbonData(userId: string): Promise<CarbonData[]>;
+  
+  // Account statement operations
+  getAccountStatements(userId: string): Promise<AccountStatement[]>;
 
   // Analytics operations
   getUserSiteStats(userId: string): Promise<{
@@ -363,6 +387,34 @@ export class MockStorage implements IStorage {
     };
     
     return mockQueries[queryIndex];
+  }
+
+  // Meter reading operations
+  async getMeterReadings(userId: string): Promise<MeterReading[]> {
+    return mockMeterReadings
+      .filter(reading => reading.site.userId === userId)
+      .sort((a, b) => new Date(b.readingDate).getTime() - new Date(a.readingDate).getTime());
+  }
+
+  // Solar project operations
+  async getSolarProjects(userId: string): Promise<SolarProject[]> {
+    return mockSolarProjects
+      .filter(project => project.site.userId === userId)
+      .sort((a, b) => new Date(b.installationDate).getTime() - new Date(a.installationDate).getTime());
+  }
+
+  // Carbon data operations
+  async getCarbonData(userId: string): Promise<CarbonData[]> {
+    return mockCarbonData
+      .filter(data => data.userId === userId)
+      .sort((a, b) => new Date(b.reportingPeriod).getTime() - new Date(a.reportingPeriod).getTime());
+  }
+
+  // Account statement operations
+  async getAccountStatements(userId: string): Promise<AccountStatement[]> {
+    return mockAccountStatements
+      .filter(statement => statement.site.userId === userId)
+      .sort((a, b) => new Date(b.statementDate).getTime() - new Date(a.statementDate).getTime());
   }
 
   // Analytics operations

@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Bolt, User, LogOut, BarChart3, MapPin, FileText, TrendingUp, MessageSquare } from "lucide-react";
+import { Bolt, User, LogOut, BarChart3, MapPin, FileText, TrendingUp, MessageSquare, Zap, Sun, Leaf, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OverviewTab from "@/components/dashboard/overview-tab";
 import SitesTab from "@/components/dashboard/sites-tab";
 import BillingTab from "@/components/dashboard/billing-tab";
 import AnalyticsTab from "@/components/dashboard/analytics-tab";
 import QueryTab from "@/components/dashboard/query-tab";
+import MeterInfoTab from "@/components/dashboard/meter-info-tab";
+import SolarPvTab from "@/components/dashboard/solar-pv-tab";
+import CarbonReportingTab from "@/components/dashboard/carbon-reporting-tab";
+import BillsPaymentsTab from "@/components/dashboard/bills-payments-tab";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -20,6 +24,10 @@ export default function Dashboard() {
     { id: "billing", label: "Bill Validation", icon: FileText },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
     { id: "query", label: "Query Management", icon: MessageSquare },
+    { id: "meter-info", label: "Meter Information", icon: Zap },
+    { id: "solar-pv", label: "Solar PV", icon: Sun },
+    { id: "carbon", label: "Carbon Reporting", icon: Leaf },
+    { id: "bills-payments", label: "Bills & Payments", icon: CreditCard },
   ];
 
 
@@ -98,6 +106,10 @@ export default function Dashboard() {
           {activeTab === "billing" && <BillingTab />}
           {activeTab === "analytics" && <AnalyticsTab />}
           {activeTab === "query" && <QueryTab />}
+          {activeTab === "meter-info" && <MeterInfoTab />}
+          {activeTab === "solar-pv" && <SolarPvTab />}
+          {activeTab === "carbon" && <CarbonReportingTab />}
+          {activeTab === "bills-payments" && <BillsPaymentsTab />}
         </main>
       </div>
     </div>

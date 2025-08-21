@@ -121,6 +121,71 @@ export interface MockQuery {
   bill?: MockBill;
 }
 
+export interface MockMeterReading {
+  id: string;
+  siteId: string;
+  mpanMprnSpid: string;
+  utilityType: string;
+  readingDate: string;
+  readingType: string;
+  previousReading: number;
+  currentReading: number;
+  consumption: number;
+  readingSource: string;
+  meterSerial: string;
+  filePath?: string;
+  site: MockSite;
+}
+
+export interface MockSolarProject {
+  id: string;
+  siteId: string;
+  projectName: string;
+  systemSize: number;
+  panelCount: number;
+  inverterType: string;
+  installationDate: string;
+  commissioningDate?: string;
+  status: string;
+  estimatedAnnualGeneration: number;
+  actualAnnualGeneration?: number;
+  exportTariff: number;
+  fitRate?: number;
+  o2mProvider: string;
+  warrantyExpiry: string;
+  site: MockSite;
+}
+
+export interface MockCarbonData {
+  id: string;
+  userId: string;
+  reportingPeriod: string;
+  scope1Emissions: number;
+  scope2Emissions: number;
+  scope3Emissions: number;
+  totalEmissions: number;
+  emissionReduction: number;
+  renewablePercentage: number;
+  carbonOffset: number;
+  reportFilePath: string;
+  verificationStatus: string;
+}
+
+export interface MockAccountStatement {
+  id: string;
+  siteId: string;
+  accountNumber: string;
+  statementDate: string;
+  statementPeriod: string;
+  openingBalance: number;
+  closingBalance: number;
+  totalCharges: number;
+  totalPayments: number;
+  utilityType: string;
+  filePath: string;
+  site: MockSite;
+}
+
 // Mock user data
 export const mockUsers: MockUser[] = [
   {
@@ -854,6 +919,277 @@ export const mockQueries: MockQuery[] = [
     lastUpdated: '2024-07-22T14:30:00Z',
     assignedTo: 'Michael Brown',
     site: mockSites[4]
+  }
+];
+
+// Mock meter readings
+export const mockMeterReadings: MockMeterReading[] = [
+  {
+    id: 'reading-1',
+    siteId: 'site-1',
+    mpanMprnSpid: '2000012345678901',
+    utilityType: 'electricity',
+    readingDate: '2024-07-31',
+    readingType: 'actual',
+    previousReading: 45267,
+    currentReading: 47892,
+    consumption: 2625,
+    readingSource: 'smart_meter',
+    meterSerial: 'SM001-2345',
+    filePath: '/meter-readings/2000012345678901_202407.pdf',
+    site: mockSites[0]
+  },
+  {
+    id: 'reading-2',
+    siteId: 'site-2',
+    mpanMprnSpid: '2000098765432109',
+    utilityType: 'electricity',
+    readingDate: '2024-07-31',
+    readingType: 'actual',
+    previousReading: 128456,
+    currentReading: 135670,
+    consumption: 7214,
+    readingSource: 'manual',
+    meterSerial: 'EM002-6789',
+    filePath: '/meter-readings/2000098765432109_202407.pdf',
+    site: mockSites[1]
+  },
+  {
+    id: 'reading-3',
+    siteId: 'site-4',
+    mpanMprnSpid: '1023456789012345',
+    utilityType: 'gas',
+    readingDate: '2024-07-31',
+    readingType: 'estimated',
+    previousReading: 89234,
+    currentReading: 94567,
+    consumption: 5333,
+    readingSource: 'estimated',
+    meterSerial: 'GM003-4567',
+    site: mockSites[3]
+  },
+  {
+    id: 'reading-4',
+    siteId: 'site-6',
+    mpanMprnSpid: '3012345678901234',
+    utilityType: 'water',
+    readingDate: '2024-07-31',
+    readingType: 'actual',
+    previousReading: 12456,
+    currentReading: 13789,
+    consumption: 1333,
+    readingSource: 'manual',
+    meterSerial: 'WM004-8901',
+    filePath: '/meter-readings/3012345678901234_202407.pdf',
+    site: mockSites[5]
+  },
+  {
+    id: 'reading-5',
+    siteId: 'site-7',
+    mpanMprnSpid: '2000147258369014',
+    utilityType: 'electricity',
+    readingDate: '2024-07-31',
+    readingType: 'actual',
+    previousReading: 256789,
+    currentReading: 267234,
+    consumption: 10445,
+    readingSource: 'smart_meter',
+    meterSerial: 'SM005-2345',
+    filePath: '/meter-readings/2000147258369014_202407.pdf',
+    site: mockSites[6]
+  }
+];
+
+// Mock solar projects
+export const mockSolarProjects: MockSolarProject[] = [
+  {
+    id: 'solar-proj-1',
+    siteId: 'site-1',
+    projectName: 'Main Office Solar Installation',
+    systemSize: 50.4,
+    panelCount: 120,
+    inverterType: 'SolarEdge SE27.6K',
+    installationDate: '2024-03-15',
+    commissioningDate: '2024-03-20',
+    status: 'operational',
+    estimatedAnnualGeneration: 45000,
+    actualAnnualGeneration: 47250,
+    exportTariff: 5.5,
+    fitRate: 3.2,
+    o2mProvider: 'SolarPower O&M Ltd',
+    warrantyExpiry: '2044-03-20',
+    site: mockSites[0]
+  },
+  {
+    id: 'solar-proj-2',
+    siteId: 'site-2',
+    projectName: 'Warehouse Rooftop Solar Array',
+    systemSize: 125.8,
+    panelCount: 299,
+    inverterType: 'Fronius Symo 24.0-3',
+    installationDate: '2024-05-20',
+    commissioningDate: '2024-05-25',
+    status: 'operational',
+    estimatedAnnualGeneration: 112000,
+    actualAnnualGeneration: 89600,
+    exportTariff: 5.5,
+    fitRate: 3.2,
+    o2mProvider: 'Green Energy Services',
+    warrantyExpiry: '2044-05-25',
+    site: mockSites[1]
+  },
+  {
+    id: 'solar-proj-3',
+    siteId: 'site-7',
+    projectName: 'Distribution Center Solar Canopy',
+    systemSize: 200.6,
+    panelCount: 478,
+    inverterType: 'Huawei SUN2000-60KTL',
+    installationDate: '2024-01-10',
+    commissioningDate: '2024-01-18',
+    status: 'operational',
+    estimatedAnnualGeneration: 180000,
+    actualAnnualGeneration: 195400,
+    exportTariff: 5.5,
+    fitRate: 3.2,
+    o2mProvider: 'Solar Maintenance Pro',
+    warrantyExpiry: '2044-01-18',
+    site: mockSites[6]
+  },
+  {
+    id: 'solar-proj-4',
+    siteId: 'site-3',
+    projectName: 'Retail Store Solar Project',
+    systemSize: 25.2,
+    panelCount: 60,
+    inverterType: 'SMA Sunny Tripower 25000TL',
+    installationDate: '2024-08-01',
+    status: 'under_construction',
+    estimatedAnnualGeneration: 22500,
+    exportTariff: 5.5,
+    o2mProvider: 'Renewable Energy Solutions',
+    warrantyExpiry: '2044-08-01',
+    site: mockSites[2]
+  }
+];
+
+// Mock carbon data
+export const mockCarbonData: MockCarbonData[] = [
+  {
+    id: 'carbon-1',
+    userId: 'user-1',
+    reportingPeriod: '2023-Q4',
+    scope1Emissions: 125.4,
+    scope2Emissions: 876.2,
+    scope3Emissions: 234.8,
+    totalEmissions: 1236.4,
+    emissionReduction: 8.5,
+    renewablePercentage: 35.2,
+    carbonOffset: 150.0,
+    reportFilePath: '/carbon-reports/Q4-2023-carbon-report.pdf',
+    verificationStatus: 'verified'
+  },
+  {
+    id: 'carbon-2',
+    userId: 'user-1',
+    reportingPeriod: '2024-Q1',
+    scope1Emissions: 118.7,
+    scope2Emissions: 798.5,
+    scope3Emissions: 245.3,
+    totalEmissions: 1162.5,
+    emissionReduction: 14.2,
+    renewablePercentage: 42.1,
+    carbonOffset: 175.0,
+    reportFilePath: '/carbon-reports/Q1-2024-carbon-report.pdf',
+    verificationStatus: 'verified'
+  },
+  {
+    id: 'carbon-3',
+    userId: 'user-1',
+    reportingPeriod: '2024-Q2',
+    scope1Emissions: 102.3,
+    scope2Emissions: 723.1,
+    scope3Emissions: 189.6,
+    totalEmissions: 1015.0,
+    emissionReduction: 22.8,
+    renewablePercentage: 48.7,
+    carbonOffset: 200.0,
+    reportFilePath: '/carbon-reports/Q2-2024-carbon-report.pdf',
+    verificationStatus: 'pending'
+  }
+];
+
+// Mock account statements
+export const mockAccountStatements: MockAccountStatement[] = [
+  {
+    id: 'stmt-1',
+    siteId: 'site-1',
+    accountNumber: 'ACC001-ELEC',
+    statementDate: '2024-07-31',
+    statementPeriod: 'July 2024',
+    openingBalance: -45.67,
+    closingBalance: 120.34,
+    totalCharges: 186.07,
+    totalPayments: 20.06,
+    utilityType: 'electricity',
+    filePath: '/statements/ACC001-ELEC-202407.pdf',
+    site: mockSites[0]
+  },
+  {
+    id: 'stmt-2',
+    siteId: 'site-2',
+    accountNumber: 'ACC002-ELEC',
+    statementDate: '2024-07-31',
+    statementPeriod: 'July 2024',
+    openingBalance: 234.56,
+    closingBalance: -1205.11,
+    totalCharges: 1239.67,
+    totalPayments: 200.00,
+    utilityType: 'electricity',
+    filePath: '/statements/ACC002-ELEC-202407.pdf',
+    site: mockSites[1]
+  },
+  {
+    id: 'stmt-3',
+    siteId: 'site-4',
+    accountNumber: 'ACC004-GAS',
+    statementDate: '2024-07-31',
+    statementPeriod: 'July 2024',
+    openingBalance: 156.78,
+    closingBalance: -1706.05,
+    totalCharges: 1862.83,
+    totalPayments: 0.00,
+    utilityType: 'gas',
+    filePath: '/statements/ACC004-GAS-202407.pdf',
+    site: mockSites[3]
+  },
+  {
+    id: 'stmt-4',
+    siteId: 'site-6',
+    accountNumber: 'ACC006-WATER',
+    statementDate: '2024-07-31',
+    statementPeriod: 'July 2024',
+    openingBalance: 12.34,
+    closingBalance: -77.33,
+    totalCharges: 89.67,
+    totalPayments: 0.00,
+    utilityType: 'water',
+    filePath: '/statements/ACC006-WATER-202407.pdf',
+    site: mockSites[5]
+  },
+  {
+    id: 'stmt-5',
+    siteId: 'site-7',
+    accountNumber: 'ACC007-ELEC',
+    statementDate: '2024-07-31',
+    statementPeriod: 'July 2024',
+    openingBalance: 567.89,
+    closingBalance: 281.40,
+    totalCharges: 286.49,
+    totalPayments: 572.98,
+    utilityType: 'electricity',
+    filePath: '/statements/ACC007-ELEC-202407.pdf',
+    site: mockSites[6]
   }
 ];
 

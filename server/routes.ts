@@ -184,6 +184,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Meter reading routes
+  app.get('/api/meter-readings', async (req, res) => {
+    try {
+      const readings = await storage.getMeterReadings(MOCK_USER_ID);
+      res.json(readings);
+    } catch (error) {
+      console.error("Error fetching meter readings:", error);
+      res.status(500).json({ message: "Failed to fetch meter readings" });
+    }
+  });
+
+  // Solar project routes
+  app.get('/api/solar-projects', async (req, res) => {
+    try {
+      const projects = await storage.getSolarProjects(MOCK_USER_ID);
+      res.json(projects);
+    } catch (error) {
+      console.error("Error fetching solar projects:", error);
+      res.status(500).json({ message: "Failed to fetch solar projects" });
+    }
+  });
+
+  // Carbon data routes
+  app.get('/api/carbon-data', async (req, res) => {
+    try {
+      const carbonData = await storage.getCarbonData(MOCK_USER_ID);
+      res.json(carbonData);
+    } catch (error) {
+      console.error("Error fetching carbon data:", error);
+      res.status(500).json({ message: "Failed to fetch carbon data" });
+    }
+  });
+
+  // Account statement routes
+  app.get('/api/account-statements', async (req, res) => {
+    try {
+      const statements = await storage.getAccountStatements(MOCK_USER_ID);
+      res.json(statements);
+    } catch (error) {
+      console.error("Error fetching account statements:", error);
+      res.status(500).json({ message: "Failed to fetch account statements" });
+    }
+  });
+
   // File download route (placeholder)
   app.get('/api/download/:type/:id', async (req, res) => {
     try {
