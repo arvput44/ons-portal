@@ -35,21 +35,12 @@ export default function AnalyticsTab() {
   const analyticsCards = [
     {
       title: "Total Consumption",
-      value: "2.4M kWh",
+      value: "2.4 GWh",
       change: "↑ 3.2% vs last month",
       changeType: "positive",
       icon: BarChart3,
       bgColor: "bg-blue-100",
       iconColor: "text-blue-600",
-    },
-    {
-      title: "Average Unit Rate",
-      value: "15.8p",
-      change: "↑ 2.1% vs last month",
-      changeType: "negative",
-      icon: PoundSterling,
-      bgColor: "bg-green-100",
-      iconColor: "text-green-600",
     },
     {
       title: "Carbon Footprint",
@@ -79,7 +70,7 @@ export default function AnalyticsTab() {
       </div>
 
       {/* Analytics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {analyticsCards.map((card, index) => {
           const Icon = card.icon;
           return (
@@ -204,18 +195,18 @@ export default function AnalyticsTab() {
 
       {/* Additional Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="border border-gray-100">
+        {/* <Card className="border border-gray-100">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">Peak vs Off-Peak Usage</CardTitle>
           </CardHeader>
           <CardContent>
             <PeakUsageChart />
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card className="border border-gray-100">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-900">Site Performance Comparison</CardTitle>
+            <CardTitle className="text-lg font-semibold text-gray-900">Site wise spendings</CardTitle>
           </CardHeader>
           <CardContent>
             <SiteComparisonChart />

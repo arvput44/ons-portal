@@ -31,7 +31,7 @@ export function MonthlyConsumptionChart() {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     datasets: [
       {
-        label: 'Consumption (kWh)',
+        label: 'Consumption (GWh)',
         data: [385000, 420000, 398000, 445000, 425000, 462000],
         backgroundColor: 'hsl(210, 83%, 53%)',
       },
@@ -67,13 +67,12 @@ export function MonthlyConsumptionChart() {
 
 export function CostBreakdownChart() {
   const data = {
-    labels: ['Unit Charges', 'Standing Charges', 'Network Charges', 'Taxes'],
+    labels: ['Electricity', 'Gas', 'Water'],
     datasets: [
       {
         data: [55, 20, 15, 10],
         backgroundColor: [
           'hsl(210, 83%, 53%)',
-          'hsl(34, 100%, 50%)',
           'hsl(122, 39%, 49%)',
           'hsl(291, 64%, 42%)',
         ],
@@ -170,7 +169,7 @@ export function SiteComparisonChart() {
         max: 100,
         ticks: {
           callback: function(value: any) {
-            return value + '%';
+            return '£' + value + 'k';
           },
         },
       },

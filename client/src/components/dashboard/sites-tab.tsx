@@ -86,8 +86,8 @@ export default function SitesTab() {
     },
     {
       key: "dayUnitRate" as keyof Site,
-      header: "Unit Rate",
-      cell: (value: string) => value ? `${value}p/kWh` : "-",
+      header: "Utility Type",
+      cell: (value: string) => value ? `Electricity` : "-",
     },
     {
       key: "status" as keyof Site,
