@@ -60,7 +60,7 @@ app.use((req, res, next) => {
   // Other ports are firewalled. Default to 6000 if not specified.
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt('3000', 10);
+  const port = parseInt('5000', 10);
   server.listen({
     port,
     // host: "0.0.0.0",

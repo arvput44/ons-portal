@@ -215,8 +215,11 @@ export const mockUsers: MockUser[] = [
   }
 ];
 
-// Mock sites data
-export const mockSites: MockSite[] = [
+// Import Excel reader for dynamic data
+import { getSitesData } from './excelReader.js';
+
+// Mock sites data (fallback)
+const hardcodedSites: MockSite[] = [
   {
     id: 'site-1',
     userId: 'user-1',
@@ -429,6 +432,14 @@ export const mockSites: MockSite[] = [
     updatedAt: '2024-06-01T00:00:00Z'
   }
 ];
+
+// Export dynamic sites data
+export const mockSites = hardcodedSites; // Fallback to hardcoded data
+
+// Function to get dynamic sites data from CSV
+export async function getDynamicSites(): Promise<MockSite[]> {
+  return await getSitesData();
+}
 
 // Mock bills data with site information embedded
 export const mockBills: MockBill[] = [

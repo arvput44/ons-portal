@@ -12,6 +12,7 @@ import {
   mockCarbonData,
   mockAccountStatements,
   calculateStats,
+  getDynamicSites,
   type MockUser as User,
   type MockSite as Site,
   type MockBill as Bill,
@@ -27,6 +28,7 @@ import {
   mockSmartMeterRollout,
   type MockSmartMeterRollout as SmartMeterRollout,
 } from "@shared/mockData";
+import { getSitesData } from "@shared/excelReader";
 
 type UpsertUser = Partial<User>;
 type InsertSite = Omit<Site, 'id' | 'createdAt' | 'updatedAt'>;
@@ -41,6 +43,45 @@ type InsertSolarProject = Omit<SolarProject, 'id' | 'site'>;
 type InsertCarbonData = Omit<CarbonData, 'id'>;
 type InsertAccountStatement = Omit<AccountStatement, 'id' | 'site'>;
 type InsertSmartMeterRollout = Omit<SmartMeterRollout, 'id' | 'site'>;
+
+// Dynamic sites data - will be loaded from Excel on every request
+// Cache for in-memory operations (create, update, delete)
+let inMemorySites: Site[] = [];
+let isInitialized = false;
+
+// Initialize dynamic sites data
+async function initializeSites() {
+  try {
+    inMemorySites = await getSitesData();
+    isInitialized = true;
+    console.log(`Initialized with ${inMemorySites.length} sites from Excel`);
+  } catch (error) {
+    console.error('Error loading dynamic sites, using fallback:', error);
+    inMemorySites = mockSites;
+    isInitialized = true;
+  }
+}
+
+// Get fresh data from Excel on every request
+async function getFreshSitesData(): Promise<Site[]> {
+  try {
+    const freshData = await getSitesData();
+    // Merge with in-memory changes (newly created/updated sites)
+    const mergedData = [...freshData];
+    
+    // Add any sites that were created in memory but not in Excel
+    for (const inMemorySite of inMemorySites) {
+      if (!freshData.find(site => site.id === inMemorySite.id)) {
+        mergedData.push(inMemorySite);
+      }
+    }
+    
+    return mergedData;
+  } catch (error) {
+    console.error('Error getting fresh sites data, using in-memory data:', error);
+    return inMemorySites;
+  }
+}
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -133,7 +174,8 @@ export class MockStorage implements IStorage {
 
   // Sites operations
   async getUserSites(userId: string, utilityType?: string): Promise<Site[]> {
-    let sites = mockSites.filter(site => site.userId === userId);
+    const freshSites = await getFreshSitesData();
+    let sites = freshSites.filter(site => site.userId === userId);
     
     if (utilityType && utilityType !== 'All Types') {
       sites = sites.filter(site => site.utilityType === utilityType.toLowerCase());
@@ -144,7 +186,8 @@ export class MockStorage implements IStorage {
   }
 
   async getSite(id: string): Promise<Site | undefined> {
-    return mockSites.find(site => site.id === id);
+    const freshSites = await getFreshSitesData();
+    return freshSites.find(site => site.id === id);
   }
 
   async createSite(site: InsertSite): Promise<Site> {
@@ -154,25 +197,26 @@ export class MockStorage implements IStorage {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    mockSites.push(newSite);
+    inMemorySites.push(newSite);
     return newSite;
   }
 
   async updateSite(id: string, siteData: Partial<InsertSite>): Promise<Site> {
-    const siteIndex = mockSites.findIndex(site => site.id === id);
+    const siteIndex = inMemorySites.findIndex(site => site.id === id);
     if (siteIndex === -1) throw new Error('Site not found');
     
-    mockSites[siteIndex] = {
-      ...mockSites[siteIndex],
+    inMemorySites[siteIndex] = {
+      ...inMemorySites[siteIndex],
       ...siteData,
       updatedAt: new Date().toISOString(),
     };
     
-    return mockSites[siteIndex];
+    return inMemorySites[siteIndex];
   }
 
   async searchSites(userId: string, searchTerm: string, utilityType?: string, status?: string): Promise<Site[]> {
-    let sites = mockSites.filter(site => site.userId === userId);
+    const freshSites = await getFreshSitesData();
+    let sites = freshSites.filter(site => site.userId === userId);
     
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -457,3 +501,6 @@ export class MockStorage implements IStorage {
 }
 
 export const storage = new MockStorage();
+
+// Initialize dynamic sites data
+initializeSites().catch(console.error);
