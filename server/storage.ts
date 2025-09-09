@@ -180,7 +180,6 @@ export class MockStorage implements IStorage {
     if (utilityType && utilityType !== 'All Types') {
       sites = sites.filter(site => site.utilityType === utilityType.toLowerCase());
     }
-    console.log("From site api....", sites);
     
     return sites.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }

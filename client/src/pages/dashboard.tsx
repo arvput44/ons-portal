@@ -34,7 +34,7 @@ export default function Dashboard() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 max-w-full overflow-hidden">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="px-6 py-4">
@@ -72,7 +72,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <div className="flex">
+      <div className="flex max-w-full overflow-hidden">
         {/* Sidebar Navigation */}
         <aside className="w-64 bg-white shadow-sm min-h-screen">
           <nav className="p-6">
@@ -102,7 +102,7 @@ export default function Dashboard() {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 max-w-full overflow-hidden">
           {activeTab === "overview" && <OverviewTab />}
           {activeTab === "sites" && <SitesTab />}
           {activeTab === "billing" && <BillingTab />}

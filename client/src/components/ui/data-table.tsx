@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Eye, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Column<T> {
   key: keyof T;
@@ -23,7 +23,6 @@ interface DataTableProps<T> {
   onPageChange?: (page: number) => void;
   totalResults?: number;
   resultsPerPage?: number;
-  onRowAction?: (action: string, row: T) => void;
   loading?: boolean;
 }
 
@@ -35,7 +34,6 @@ export function DataTable<T extends Record<string, any>>({
   onPageChange,
   totalResults = 0,
   resultsPerPage = 10,
-  onRowAction,
   loading = false,
 }: DataTableProps<T>) {
   const startResult = (currentPage - 1) * resultsPerPage + 1;
@@ -53,27 +51,22 @@ export function DataTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="overflow-x-auto">
-        <Table>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden max-w-full">
+      <div className="overflow-x-auto max-w-full">
+        <Table className="min-w-full">
           <TableHeader>
             <TableRow className="bg-gray-50">
               {columns.map((column) => (
-                <TableHead key={String(column.key)} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <TableHead key={String(column.key)} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap max-w-xs">
                   {column.header}
                 </TableHead>
               ))}
-              {onRowAction && (
-                <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </TableHead>
-              )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length + (onRowAction ? 1 : 0)} className="px-6 py-8 text-center text-gray-500">
+                <TableCell colSpan={columns.length} className="px-6 py-8 text-center text-gray-500">
                   No data available
                 </TableCell>
               </TableRow>
@@ -81,34 +74,10 @@ export function DataTable<T extends Record<string, any>>({
               data.map((row, index) => (
                 <TableRow key={index} className="hover:bg-gray-50">
                   {columns.map((column) => (
-                    <TableCell key={String(column.key)} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <TableCell key={String(column.key)} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs">
                       {column.cell ? column.cell(row[column.key], row) : String(row[column.key] || '-')}
                     </TableCell>
                   ))}
-                  {onRowAction && (
-                    <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onRowAction('view', row)}
-                          className="text-energy-blue hover:text-blue-700"
-                          data-testid={`button-view-${index}`}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onRowAction('download', row)}
-                          className="text-gray-400 hover:text-gray-600"
-                          data-testid={`button-download-${index}`}
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  )}
                 </TableRow>
               ))
             )}
